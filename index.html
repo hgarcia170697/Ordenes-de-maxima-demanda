@@ -1,0 +1,394 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Formulario Mediciones Indirectas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: una columna de formulario tipo hoja de orden, secciones numeradas como la hoja física, barra de estado fija abajo */
+:root{
+  --bg:#f3f5f7; --paper:#ffffff; --ink:#18232d; --muted:#5b6b78; --line:#d5dde3;
+  --accent:#1d5b86; --accent-ink:#ffffff; --accent-soft:#e3eef6;
+  --warn:#9a5b00; --warn-bg:#fff4e0; --err:#b3261e; --err-bg:#fdecea; --ok:#1e7a46; --ok-bg:#e6f4ec;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f161c; --paper:#172129; --ink:#e4ebf0; --muted:#93a4b1; --line:#2b3a46;
+  --accent:#6fb0de; --accent-ink:#0b1a24; --accent-soft:#1b3446;
+  --warn:#f0b45a; --warn-bg:#33270f; --err:#f2958d; --err-bg:#3a1a18; --ok:#7fd3a0; --ok-bg:#15301f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161c; --paper:#172129; --ink:#e4ebf0; --muted:#93a4b1; --line:#2b3a46;
+  --accent:#6fb0de; --accent-ink:#0b1a24; --accent-soft:#1b3446;
+  --warn:#f0b45a; --warn-bg:#33270f; --err:#f2958d; --err-bg:#3a1a18; --ok:#7fd3a0; --ok-bg:#15301f; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 120px}
+.wrap{max-width:860px;margin:0 auto}
+header{padding-block:28px 12px;display:grid;gap:6px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:clamp(22px,4vw,30px);margin:0;line-height:1.15;text-wrap:balance}
+.lede{color:var(--muted);margin:0;max-width:65ch}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-block:16px 20px;flex-wrap:wrap}
+.tab{background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;font:600 14px var(--sans);color:var(--muted);cursor:pointer}
+.tab[aria-selected="true"]{color:var(--accent);border-color:var(--accent)}
+.tab .count{font-family:var(--mono);font-size:12px;background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:1px 7px;margin-left:6px}
+.note{background:var(--accent-soft);border-radius:8px;padding:10px 14px;font-size:13.5px;color:var(--ink);margin-bottom:18px}
+section.sec{background:var(--paper);border:1px solid var(--line);border-radius:10px;margin-bottom:14px}
+.sec h2{font-size:15px;margin:0;padding:12px 18px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:baseline}
+.sec h2 .n{font-family:var(--mono);color:var(--accent);font-weight:500}
+.sec h2 .tag{margin-left:auto;font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px 16px;padding:16px 18px}
+.field{display:grid;gap:4px;min-width:0;align-content:start}
+.field.wide{grid-column:1/-1}
+label{font-size:13px;font-weight:600}
+label .req{color:var(--err);margin-left:2px}
+input,select,textarea{font:15px var(--sans);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+input[type=number]{font-family:var(--mono);font-variant-numeric:tabular-nums}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+input[readonly]{background:var(--bg);color:var(--muted)}
+textarea{min-height:80px;resize:vertical}
+.field.bad-c input,.field.bad-c select{border-color:var(--warn);background:var(--warn-bg)}
+.field.bad-f input,.field.bad-f select,.field.bad-f textarea{border-color:var(--err)}
+.msg{font-size:12.5px;min-height:0}
+.field.bad-c .msg{color:var(--warn);font-weight:500}
+.field.bad-f .msg{color:var(--err)}
+.contract{margin:0 18px 16px;padding:10px 14px;border-radius:8px;font-size:13.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.contract.found{background:var(--ok-bg);color:var(--ok)}
+.contract.missing{background:var(--err-bg);color:var(--err)}
+.contract b{color:var(--ink)}
+.check{display:flex;gap:10px;align-items:flex-start;padding:16px 18px;font-size:14px}
+.check input{width:18px;height:18px;margin-top:2px;flex:none}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.bar-in{max-width:860px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.status{display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:0}
+.pill{font:500 12.5px var(--mono);padding:4px 10px;border-radius:20px}
+.pill.c{background:var(--warn-bg);color:var(--warn)}
+.pill.f{background:var(--err-bg);color:var(--err)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.btn{font:600 14px var(--sans);border-radius:8px;padding:10px 18px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.summary{background:var(--err-bg);border:1px solid var(--err);border-radius:10px;padding:14px 18px;margin-bottom:14px}
+.summary h3{margin:0 0 6px;font-size:15px;color:var(--err)}
+.summary ul{margin:0;padding-left:20px;font-size:14px}
+.summary a{color:var(--ink)}
+/* comprobante */
+.receipt{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.r-head{padding:18px;border-bottom:1px solid var(--line);display:grid;gap:4px}
+.lock{display:inline-flex;gap:6px;align-items:center;font:600 12px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ok);background:var(--ok-bg);padding:4px 10px;border-radius:20px;width:max-content}
+.r-head h2{margin:4px 0 0;font-size:20px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 18px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:13.5px}
+.meta dt{color:var(--muted);font-size:12px}
+.meta dd{margin:0;font-family:var(--mono);word-break:break-all}
+.r-sec{padding:12px 18px;border-bottom:1px solid var(--line)}
+.r-sec h3{font-size:13px;margin:0 0 8px;color:var(--accent)}
+.r-sec dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px 18px;margin:0;font-size:13.5px}
+.r-sec dt{color:var(--muted);font-size:12px}
+.r-sec dd{margin:0}
+.r-foot{padding:14px 18px;font-size:13px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.tablewrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line)}
+th{font:600 12px var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+td.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--accent-soft)}
+.empty{padding:28px 18px;text-align:center;color:var(--muted)}
+.contracts{margin-top:18px}
+.contracts summary{cursor:pointer;font-weight:600;font-size:14px;padding-block:6px}
+@media (prefers-reduced-motion:no-preference){.btn{transition:filter .15s}.btn:hover{filter:brightness(1.08)}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Coopeguanacaste · Órdenes de máxima demanda · Prototipo</span>
+    <h1>Reporte de medición indirecta</h1>
+    <p class="lede">Simulacro del formulario digital. El técnico llena y envía; el sistema revisa contra el contrato y no deja enviar datos que no coinciden. Una vez enviado, el reporte queda bloqueado y solo Hazel lo ve.</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="t-form" aria-selected="true">Vista del técnico</button>
+    <button class="tab" role="tab" id="t-reg" aria-selected="false">Registro de Hazel <span class="count" id="regCount">0</span></button>
+  </div>
+
+  <!-- ===== Vista del técnico ===== -->
+  <div id="v-form">
+    <div class="note"><b>Datos de ejemplo.</b> El formulario abre con un caso de prueba: el contrato 348 tiene 4 transformadores y el técnico puso 3. Corrija los avisos para poder enviar.</div>
+    <div id="summary" class="summary" hidden></div>
+
+    <form id="f" novalidate>
+      <section class="sec">
+        <h2><span class="n">0</span>Identificación de la orden</h2>
+        <div class="grid">
+          <div class="field" data-k="orden"><label for="orden">Número de orden<span class="req">*</span></label><input id="orden" inputmode="numeric"><span class="msg"></span></div>
+          <div class="field" data-k="contrato"><label for="contrato">Número de contrato<span class="req">*</span></label><input id="contrato" inputmode="numeric"><span class="msg"></span></div>
+          <div class="field" data-k="tipo"><label for="tipo">Tipo de orden<span class="req">*</span></label>
+            <select id="tipo"><option value="">Seleccione…</option><option>Cambio</option><option>Retiro</option><option>Instalación servicio nuevo</option><option>Reinstalación</option></select><span class="msg"></span></div>
+          <div class="field" data-k="tecnico"><label for="tecnico">Técnico responsable<span class="req">*</span></label><input id="tecnico"><span class="msg"></span></div>
+        </div>
+        <div id="cInfo" class="contract" hidden></div>
+      </section>
+
+      <section class="sec">
+        <h2><span class="n">1</span>Datos generales del servicio</h2>
+        <div class="grid">
+          <div class="field" data-k="cliente"><label for="cliente">Nombre del cliente</label><input id="cliente" readonly placeholder="Se llena con el contrato"><span class="msg"></span></div>
+          <div class="field" data-k="local"><label for="local">Localización</label><input id="local" readonly placeholder="Se llena con el contrato"><span class="msg"></span></div>
+          <div class="field wide" data-k="direccion"><label for="direccion">Dirección / señas</label><input id="direccion"><span class="msg"></span></div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2><span class="n">2</span>Características del servicio<span class="tag">Se valida contra contrato</span></h2>
+        <div class="grid">
+          <div class="field" data-k="sistema"><label for="sistema">Sistema<span class="req">*</span></label>
+            <select id="sistema"><option value="">Seleccione…</option><option>Monofásico</option><option>Trifásico</option></select><span class="msg"></span></div>
+          <div class="field" data-k="voltaje"><label for="voltaje">Voltaje de servicio (V)<span class="req">*</span></label>
+            <select id="voltaje"><option value="">Seleccione…</option><option>120/240</option><option>120/208</option><option>240/480</option><option>277/480</option></select><span class="msg"></span></div>
+          <div class="field" data-k="conexion"><label for="conexion">Conexión<span class="req">*</span></label>
+            <select id="conexion"><option value="">Seleccione…</option><option>Estrella-estrella</option><option>Estrella-delta</option><option>Otra</option></select><span class="msg"></span></div>
+          <div class="field" data-k="trafos"><label for="trafos">Cantidad de transformadores<span class="req">*</span></label><input id="trafos" type="number" min="1" step="1"><span class="msg"></span></div>
+          <div class="field" data-k="kva"><label for="kva">Capacidad del banco (kVA)<span class="req">*</span></label><input id="kva" type="number" min="0" step="any"><span class="msg"></span></div>
+          <div class="field" data-k="cliTipo"><label for="cliTipo">Tipo de cliente</label>
+            <select id="cliTipo"><option value="">Seleccione…</option><option>Residencial</option><option>Comercial</option><option>Industrial</option></select><span class="msg"></span></div>
+          <div class="field" data-k="acometida"><label for="acometida">Acometida</label>
+            <select id="acometida"><option value="">Seleccione…</option><option>Aérea</option><option>Subterránea</option></select><span class="msg"></span></div>
+          <div class="field" data-k="macro"><label for="macro">¿Medición macro?<span class="req">*</span></label>
+            <select id="macro"><option value="">Seleccione…</option><option>No</option><option>Sí</option></select><span class="msg"></span></div>
+          <div class="field" data-k="medAsoc" id="w-medAsoc" hidden><label for="medAsoc">Medidores individuales asociados<span class="req">*</span></label><input id="medAsoc" type="number" min="1" step="1"><span class="msg"></span></div>
+        </div>
+      </section>
+
+      <section class="sec" id="s-ret">
+        <h2><span class="n">3</span>Datos del medidor retirado<span class="tag">Obligatorio en cambio o retiro</span></h2>
+        <div class="grid">
+          <div class="field" data-k="rNum"><label for="rNum">Número<span class="req">*</span></label><input id="rNum"><span class="msg"></span></div>
+          <div class="field" data-k="rMarca"><label for="rMarca">Marca<span class="req">*</span></label><input id="rMarca"><span class="msg"></span></div>
+          <div class="field" data-k="rKwh"><label for="rKwh">Lectura final energía (kWh)<span class="req">*</span></label><input id="rKwh" type="number" step="any"><span class="msg"></span></div>
+          <div class="field" data-k="rKw"><label for="rKw">Lectura M.D. (kW)<span class="req">*</span></label><input id="rKw" type="number" step="any"><span class="msg"></span></div>
+          <div class="field" data-k="rSello"><label for="rSello">N.º sello tapa/aro encontrado<span class="req">*</span></label><input id="rSello"><span class="msg"></span></div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2><span class="n">4</span>Datos del medidor instalado</h2>
+        <div class="grid">
+          <div class="field" data-k="iNum"><label for="iNum">Número<span class="req">*</span></label><input id="iNum"><span class="msg"></span></div>
+          <div class="field" data-k="iMarca"><label for="iMarca">Marca<span class="req">*</span></label><input id="iMarca"><span class="msg"></span></div>
+          <div class="field" data-k="iClase"><label for="iClase">Clase<span class="req">*</span></label><input id="iClase"><span class="msg"></span></div>
+          <div class="field" data-k="iTipo"><label for="iTipo">Tipo</label><input id="iTipo"><span class="msg"></span></div>
+          <div class="field" data-k="iKwh"><label for="iKwh">Lectura energía (kWh)<span class="req">*</span></label><input id="iKwh" type="number" step="any"><span class="msg"></span></div>
+          <div class="field" data-k="iKw"><label for="iKw">Lectura M.D. (kW)<span class="req">*</span></label><input id="iKw" type="number" step="any"><span class="msg"></span></div>
+          <div class="field" data-k="iSello"><label for="iSello">N.º sello tapa/aro colocado<span class="req">*</span></label><input id="iSello"><span class="msg"></span></div>
+          <div class="field" data-k="iSelloMD"><label for="iSelloMD">N.º sello máxima demanda<span class="req">*</span></label><input id="iSelloMD"><span class="msg"></span></div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2><span class="n">5</span>Transformadores de corriente / potencial<span class="tag">Se valida contra contrato</span></h2>
+        <div class="grid">
+          <div class="field" data-k="tc"><label for="tc">Relación de TC<span class="req">*</span></label><input id="tc" placeholder="Ej. 600/5"><span class="msg"></span></div>
+          <div class="field" data-k="tp"><label for="tp">Relación de TP</label><input id="tp" placeholder="Si no aplica, dejar vacío"><span class="msg"></span></div>
+          <div class="field" data-k="constAnt" id="w-constAnt"><label for="constAnt">Constante anterior<span class="req">*</span></label><input id="constAnt" type="number" step="any"><span class="msg"></span></div>
+          <div class="field" data-k="constante"><label for="constante">Constante de medición<span class="req">*</span></label><input id="constante" type="number" step="any"><span class="msg"></span></div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2><span class="n">6</span>Mediciones en sitio</h2>
+        <div class="grid">
+          <div class="field" data-k="v1"><label for="v1">Voltaje F1-N (V)<span class="req">*</span></label><input id="v1" type="number" step="any"><span class="msg"></span></div>
+          <div class="field" data-k="v2"><label for="v2">Voltaje F2-N (V)<span class="req">*</span></label><input id="v2" type="number" step="any"><span class="msg"></span></div>
+          <div class="field" data-k="v3" id="w-v3"><label for="v3">Voltaje F3-N (V)<span class="req">*</span></label><input id="v3" type="number" step="any"><span class="msg"></span></div>
+          <div class="field" data-k="a1"><label for="a1">Amperaje F1 (A)<span class="req">*</span></label><input id="a1" type="number" step="any"><span class="msg"></span></div>
+          <div class="field" data-k="a2"><label for="a2">Amperaje F2 (A)<span class="req">*</span></label><input id="a2" type="number" step="any"><span class="msg"></span></div>
+          <div class="field" data-k="a3" id="w-a3"><label for="a3">Amperaje F3 (A)<span class="req">*</span></label><input id="a3" type="number" step="any"><span class="msg"></span></div>
+          <div class="field" data-k="fp"><label for="fp">Factor de potencia</label><input id="fp" type="number" step="any" min="0" max="1"><span class="msg"></span></div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2><span class="n">7</span>Observaciones y cierre</h2>
+        <div class="grid">
+          <div class="field wide" data-k="obs"><label for="obs">Notas / observaciones</label><textarea id="obs"></textarea><span class="msg"></span></div>
+        </div>
+        <div class="field" data-k="decl" style="padding:0 0 4px"><label class="check" for="decl"><input type="checkbox" id="decl"><span>Declaro que los datos corresponden a lo encontrado en sitio. Entiendo que, una vez enviado, el reporte no se puede modificar.<span class="req">*</span></span></label><span class="msg" style="padding:0 18px 12px"></span></div>
+      </section>
+    </form>
+
+    <details class="contracts">
+      <summary>Contratos de prueba cargados en el simulacro</summary>
+      <p class="lede" style="font-size:13.5px">En la versión real estos datos vienen de la base de la cooperativa y el técnico no los ve. Aquí se muestran solo para probar.</p>
+      <div class="tablewrap"><table><thead><tr><th>Contrato</th><th>Cliente</th><th>Sistema</th><th>Voltaje</th><th>Transf.</th><th>kVA</th><th>TC</th><th>Constante</th><th>Macro</th></tr></thead><tbody id="cTable"></tbody></table></div>
+    </details>
+  </div>
+
+  <!-- ===== Comprobante ===== -->
+  <div id="v-rec" hidden></div>
+
+  <!-- ===== Registro de Hazel ===== -->
+  <div id="v-reg" hidden>
+    <div class="note">Solo Hazel tiene acceso a esta vista. Cada reporte llega por correo como PDF y queda aquí con su huella digital. Si alguien altera una copia, la huella deja de coincidir.</div>
+    <div class="tablewrap"><table><thead><tr><th>Folio</th><th>Enviado</th><th>Orden</th><th>Contrato</th><th>Técnico</th><th>Tipo</th><th>Huella</th></tr></thead><tbody id="regBody"></tbody></table>
+    <div id="regEmpty" class="empty">Todavía no hay reportes enviados en este simulacro.</div></div>
+  </div>
+</div>
+
+<div class="bar" id="bar"><div class="bar-in">
+  <div class="status" id="status"></div>
+  <button class="btn ghost" type="button" id="btnFill">Llenar caso correcto</button>
+  <button class="btn" type="button" id="btnSend">Enviar reporte</button>
+</div></div>
+
+<script>
+const CONTRATOS={
+  "348":{cliente:"Condominio Vista Mar (ejemplo)",local:"Tamarindo, Santa Cruz",sistema:"Trifásico",voltaje:"120/208",conexion:"Estrella-estrella",trafos:4,kva:500,tc:"400/5",tp:"",constante:80,macro:"Sí"},
+  "1205":{cliente:"Quebrador (ejemplo)",local:"Nicoya",sistema:"Trifásico",voltaje:"277/480",conexion:"Estrella-estrella",trafos:3,kva:300,tc:"600/5",tp:"",constante:122.4,macro:"No"},
+  "2210":{cliente:"Hotel Brisas del Pacífico (ejemplo)",local:"Liberia",sistema:"Monofásico",voltaje:"120/240",conexion:"Otra",trafos:1,kva:100,tc:"200/5",tp:"",constante:40,macro:"No"}
+};
+const LABELS={orden:"Número de orden",contrato:"Número de contrato",tipo:"Tipo de orden",tecnico:"Técnico responsable",cliente:"Cliente",local:"Localización",direccion:"Dirección",sistema:"Sistema",voltaje:"Voltaje de servicio",conexion:"Conexión",trafos:"Cantidad de transformadores",kva:"Capacidad del banco (kVA)",cliTipo:"Tipo de cliente",acometida:"Acometida",macro:"¿Medición macro?",medAsoc:"Medidores asociados",rNum:"Número",rMarca:"Marca",rKwh:"Lectura final (kWh)",rKw:"Lectura M.D. (kW)",rSello:"Sello encontrado",iNum:"Número",iMarca:"Marca",iClase:"Clase",iTipo:"Tipo",iKwh:"Lectura (kWh)",iKw:"Lectura M.D. (kW)",iSello:"Sello tapa/aro",iSelloMD:"Sello máx. demanda",tc:"Relación de TC",tp:"Relación de TP",constAnt:"Constante anterior",constante:"Constante de medición",v1:"Voltaje F1-N",v2:"Voltaje F2-N",v3:"Voltaje F3-N",a1:"Amperaje F1",a2:"Amperaje F2",a3:"Amperaje F3",fp:"Factor de potencia",obs:"Observaciones",decl:"Declaración"};
+const $=id=>document.getElementById(id);
+const v=id=>{const e=$(id);if(!e)return"";return e.type==="checkbox"?e.checked:e.value.trim()};
+const norm=s=>String(s).replace(/\s+/g,"").toLowerCase();
+let touched=false, registro=[], folioN=0;
+
+// tabla de contratos
+$("cTable").innerHTML=Object.entries(CONTRATOS).map(([k,c])=>`<tr style="cursor:default"><td class="mono">${k}</td><td>${c.cliente}</td><td>${c.sistema}</td><td class="mono">${c.voltaje}</td><td class="mono">${c.trafos}</td><td class="mono">${c.kva}</td><td class="mono">${c.tc}</td><td class="mono">${c.constante}</td><td>${c.macro}</td></tr>`).join("");
+
+function visibility(){
+  const t=v("tipo"), cambio=t==="Cambio"||t==="Retiro";
+  $("s-ret").hidden=!cambio;
+  $("w-constAnt").hidden=t!=="Cambio";
+  const tri=v("sistema")!=="Monofásico";
+  $("w-v3").hidden=!tri; $("w-a3").hidden=!tri;
+  $("w-medAsoc").hidden=v("macro")!=="Sí";
+}
+
+function validate(){
+  visibility();
+  const errs=[]; const add=(k,msg,kind)=>errs.push({k,msg,kind});
+  const t=v("tipo"), cambio=t==="Cambio"||t==="Retiro", tri=v("sistema")!=="Monofásico";
+  let req=["orden","contrato","tipo","tecnico","sistema","voltaje","conexion","trafos","kva","macro","iNum","iMarca","iClase","iKwh","iKw","iSello","iSelloMD","tc","constante","v1","v2","a1","a2"];
+  if(cambio) req.push("rNum","rMarca","rKwh","rKw","rSello");
+  if(t==="Cambio") req.push("constAnt");
+  if(tri) req.push("v3","a3");
+  if(v("macro")==="Sí") req.push("medAsoc");
+  req.forEach(k=>{if(v(k)==="")add(k,"Campo obligatorio.","f")});
+  if(!v("decl")) add("decl","Debe confirmar la declaración para enviar.","f");
+  const fp=v("fp"); if(fp!==""&&(+fp<0||+fp>1)) add("fp","Debe estar entre 0 y 1.","f");
+  if(v("tc")&&!/^\d+\s*\/\s*\d+$/.test(v("tc"))) add("tc","Use el formato 600/5.","f");
+
+  // contrato
+  const num=v("contrato"), c=CONTRATOS[num], info=$("cInfo");
+  if(num===""){info.hidden=true;$("cliente").value="";$("local").value="";}
+  else if(!c){info.hidden=false;info.className="contract missing";info.textContent="Ese número de contrato no existe. Revise la orden de trabajo.";add("contrato","Contrato no encontrado.","f");$("cliente").value="";$("local").value="";}
+  else{
+    info.hidden=false;info.className="contract found";
+    info.innerHTML=`Contrato encontrado: <b>${c.cliente}</b> · ${c.local}`;
+    $("cliente").value=c.cliente;$("local").value=c.local;
+    const cmp=(k,ok)=>{if(v(k)!==""&&!ok)add(k,"No coincide con el contrato. Verifique en sitio antes de enviar.","c")};
+    cmp("sistema",v("sistema")===c.sistema);
+    cmp("voltaje",v("voltaje")===c.voltaje);
+    cmp("conexion",v("conexion")===c.conexion);
+    cmp("trafos",+v("trafos")===c.trafos);
+    cmp("kva",+v("kva")===c.kva);
+    cmp("tc",norm(v("tc"))===norm(c.tc));
+    cmp("constante",+v("constante")===c.constante);
+    cmp("macro",v("macro")===c.macro);
+    if(c.tp) cmp("tp",norm(v("tp"))===norm(c.tp));
+  }
+  return errs;
+}
+
+function render(errs){
+  document.querySelectorAll(".field").forEach(f=>{f.classList.remove("bad-c","bad-f");const m=f.querySelector(".msg");if(m)m.textContent=""});
+  const showF=touched;
+  errs.forEach(e=>{
+    if(e.kind==="f"&&!showF)return;
+    const f=document.querySelector(`.field[data-k="${e.k}"]`); if(!f||f.hidden||f.closest("[hidden]"))return;
+    f.classList.add(e.kind==="c"?"bad-c":"bad-f"); f.querySelector(".msg").textContent=e.msg;
+  });
+  const nc=errs.filter(e=>e.kind==="c").length, nf=errs.filter(e=>e.kind==="f").length;
+  $("status").innerHTML=(nc?`<span class="pill c">${nc} no coincide${nc>1?"n":""} con el contrato</span>`:"")+(nf?`<span class="pill f">${nf} campo${nf>1?"s":""} pendiente${nf>1?"s":""}</span>`:"")+(!nc&&!nf?`<span class="pill ok">Listo para enviar</span>`:"");
+  if(!$("summary").hidden) showSummary(errs);
+}
+
+function showSummary(errs){
+  const s=$("summary");
+  if(!errs.length){s.hidden=true;return}
+  s.hidden=false;
+  s.innerHTML=`<h3>No se puede enviar todavía</h3><ul>${errs.map(e=>`<li><a href="#${e.k}" data-go="${e.k}">${LABELS[e.k]}</a>: ${e.msg}</li>`).join("")}</ul>`;
+}
+
+$("f").addEventListener("input",()=>render(validate()));
+$("f").addEventListener("change",()=>render(validate()));
+$("f").addEventListener("submit",e=>e.preventDefault());
+$("summary").addEventListener("click",e=>{const k=e.target.dataset.go;if(k){e.preventDefault();$(k).focus();$(k).scrollIntoView({block:"center"})}});
+
+async function huella(text){
+  try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(text));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+  catch(_){let h=0;for(const ch of text)h=(h*31+ch.charCodeAt(0))>>>0;return h.toString(16).padStart(8,"0")}
+}
+
+$("btnSend").addEventListener("click",async()=>{
+  touched=true; const errs=validate(); render(errs);
+  if(errs.length){showSummary(errs);window.scrollTo({top:$("summary").offsetTop-10,behavior:"smooth"});return}
+  const data={};document.querySelectorAll("#f [id]").forEach(el=>{if(el.matches("input,select,textarea")&&!el.closest("[hidden]"))data[el.id]=v(el.id)});
+  const fecha=new Date();
+  folioN++;
+  const rec={folio:`MI-2026-${String(folioN).padStart(4,"0")}`,fecha:fecha.toLocaleString("es-CR",{dateStyle:"medium",timeStyle:"medium"}),data};
+  rec.hash=await huella(JSON.stringify({folio:rec.folio,fecha:fecha.toISOString(),data}));
+  registro.unshift(rec); $("regCount").textContent=registro.length;
+  showReceipt(rec,true);
+});
+
+const GROUPS=[
+  ["Orden",["orden","contrato","tipo","tecnico","cliente","local","direccion"]],
+  ["Características del servicio",["sistema","voltaje","conexion","trafos","kva","cliTipo","acometida","macro","medAsoc"]],
+  ["Medidor retirado",["rNum","rMarca","rKwh","rKw","rSello"]],
+  ["Medidor instalado",["iNum","iMarca","iClase","iTipo","iKwh","iKw","iSello","iSelloMD"]],
+  ["Transformadores de medida",["tc","tp","constAnt","constante"]],
+  ["Mediciones en sitio",["v1","v2","v3","a1","a2","a3","fp"]],
+  ["Observaciones",["obs"]]
+];
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+
+function showReceipt(rec,fresh){
+  const d=rec.data;
+  const secs=GROUPS.map(([t,ks])=>{const items=ks.filter(k=>k in d&&d[k]!=="").map(k=>`<div><dt>${LABELS[k]}</dt><dd>${esc(d[k])}</dd></div>`).join("");return items?`<div class="r-sec"><h3>${t}</h3><dl>${items}</dl></div>`:""}).join("");
+  $("v-rec").innerHTML=`<div class="receipt">
+    <div class="r-head"><span class="lock">● Enviado · bloqueado</span><h2>Comprobante ${rec.folio}</h2>
+    <span class="lede">${fresh?"El técnico ya no puede modificar este reporte. En la versión real, el PDF le llega a Hazel por correo y se guarda en su carpeta.":"Vista de Hazel. Solo lectura."}</span></div>
+    <dl class="meta"><div><dt>Enviado</dt><dd>${rec.fecha}</dd></div><div><dt>Enviado por</dt><dd>${esc(d.tecnico)}</dd></div><div><dt>Validación contra contrato</dt><dd>Sin diferencias</dd></div><div style="grid-column:1/-1"><dt>Huella digital (SHA-256)</dt><dd>${rec.hash}</dd></div></dl>
+    ${secs}
+    <div class="r-foot"><span>La huella se calcula con todos los datos. Si alguien cambia un solo valor en una copia, la huella ya no coincide con la del registro.</span>
+    <button class="btn ghost" type="button" id="btnBack">${fresh?"Nuevo reporte":"Volver al registro"}</button></div></div>`;
+  show("rec");
+  $("btnBack").onclick=()=>{if(fresh){resetForm();show("form")}else show("reg")};
+  window.scrollTo({top:0});
+}
+
+function renderReg(){
+  $("regEmpty").hidden=registro.length>0;
+  $("regBody").innerHTML=registro.map((r,i)=>`<tr data-i="${i}" tabindex="0"><td class="mono">${r.folio}</td><td>${r.fecha}</td><td class="mono">${esc(r.data.orden)}</td><td class="mono">${esc(r.data.contrato)}</td><td>${esc(r.data.tecnico)}</td><td>${esc(r.data.tipo)}</td><td class="mono">${r.hash.slice(0,12)}…</td></tr>`).join("");
+}
+$("regBody").addEventListener("click",e=>{const tr=e.target.closest("tr");if(tr)showReceipt(registro[+tr.dataset.i],false)});
+$("regBody").addEventListener("keydown",e=>{if(e.key==="Enter"){const tr=e.target.closest("tr");if(tr)showReceipt(registro[+tr.dataset.i],false)}});
+
+function show(w){
+  $("v-form").hidden=w!=="form";$("v-rec").hidden=w!=="rec";$("v-reg").hidden=w!=="reg";
+  $("bar").hidden=w!=="form";
+  $("t-form").setAttribute("aria-selected",w==="form"||(w==="rec"&&$("btnBack")?.textContent==="Nuevo reporte"));
+  $("t-reg").setAttribute("aria-selected",w==="reg"||(w==="rec"&&$("btnBack")?.textContent!=="Nuevo reporte"));
+  if(w==="reg")renderReg();
+}
+$("t-form").onclick=()=>show("form");
+$("t-reg").onclick=()=>show("reg");
+
+function fill(o){document.querySelectorAll("#f input,#f select,#f textarea").forEach(el=>{if(el.readOnly)return;if(el.type==="checkbox")el.checked=!!o[el.id];else el.value=o[el.id]??""});touched=false;$("summary").hidden=true;render(validate())}
+function resetForm(){fill({})}
+
+const EJEMPLO={orden:"58213",contrato:"348",tipo:"Cambio",tecnico:"Técnico de prueba",direccion:"Frente a la entrada principal del condominio",sistema:"Trifásico",voltaje:"120/208",conexion:"Estrella-estrella",trafos:"3",kva:"500",cliTipo:"Residencial",acometida:"Subterránea",macro:"Sí",medAsoc:"24",rNum:"771045",rMarca:"Elster",rKwh:"98231.4",rKw:"86.2",rSello:"",iNum:"800192",iMarca:"Itron",iClase:"20",iTipo:"OpenWay",iKwh:"0.0",iKw:"0.00",iSello:"A-55102",iSelloMD:"A-55103",tc:"400/5",tp:"",constAnt:"80",constante:"80",v1:"121.3",v2:"120.8",v3:"121.0",a1:"142",a2:"138",a3:"151",fp:"0.93",obs:"Cambio de medidor por falla de display.",decl:false};
+$("btnFill").onclick=()=>{fill({...EJEMPLO,trafos:"4",rSello:"A-31877",decl:true})};
+
+fill(EJEMPLO); touched=true; render(validate());
+</script>
+
+</body></html>
