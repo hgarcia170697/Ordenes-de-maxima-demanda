@@ -400,9 +400,14 @@ $("btnSend").addEventListener("click", async () => {
 
     if (error) throw error;
     if (!data?.ok) throw new Error("No se confirmó el guardado");
+    if (data.pdf_generado) {
+      alert("Reporte " + data.folio +
+            " guardado y PDF generado correctamente.");
+    } else {
+      alert("Reporte guardado con ID " + data.id +
+            ", pero hubo un problema al generar el PDF.");
+    }
 
-    alert("Reporte guardado correctamente en Supabase. ID: " + data.id +
-          "\nEl PDF y correo todavía no están configurados.");
     resetForm();
   } catch (error) {
     console.error(error);
