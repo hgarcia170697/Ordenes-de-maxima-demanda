@@ -112,7 +112,23 @@ tbody tr:hover{background:var(--accent-soft)}
   <div id="v-form">
     <div class="note"><b>Datos de ejemplo.</b> El formulario abre con un caso de prueba: el contrato 348 tiene 4 transformadores y el técnico puso 3. Corrija los avisos para poder enviar.</div>
     <div id="summary" class="summary" hidden></div>
-
+    <section class="sec" id="authPanel">
+      <h2>Acceso de técnico</h2>
+      <div class="grid">
+        <div class="field">
+          <label for="loginEmail">Correo electrónico</label>
+          <input id="loginEmail" type="email" autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="loginPassword">Contraseña</label>
+          <input id="loginPassword" type="password" autocomplete="current-password">
+        </div>
+        <div class="field">
+          <button class="btn" type="button" id="btnLogin">Iniciar sesión</button>
+          <span class="msg" id="authMsg"></span>
+        </div>
+      </div>
+    </section>
     <form id="f" novalidate>
       <section class="sec">
         <h2><span class="n">0</span>Identificación de la orden</h2>
@@ -237,6 +253,8 @@ tbody tr:hover{background:var(--accent-soft)}
   <button class="btn" type="button" id="btnSend">Enviar reporte</button>
 </div></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
 <script>
 const CONTRATOS={
   "348":{cliente:"Condominio Vista Mar (ejemplo)",local:"Tamarindo, Santa Cruz",sistema:"Trifásico",voltaje:"120/208",conexion:"Estrella-estrella",trafos:4,kva:500,tc:"400/5",tp:"",constante:80,macro:"Sí"},
@@ -245,6 +263,35 @@ const CONTRATOS={
 };
 const LABELS={orden:"Número de orden",contrato:"Número de contrato",tipo:"Tipo de orden",tecnico:"Técnico responsable",cliente:"Cliente",local:"Localización",direccion:"Dirección",sistema:"Sistema",voltaje:"Voltaje de servicio",conexion:"Conexión",trafos:"Cantidad de transformadores",kva:"Capacidad del banco (kVA)",cliTipo:"Tipo de cliente",acometida:"Acometida",macro:"¿Medición macro?",medAsoc:"Medidores asociados",rNum:"Número",rMarca:"Marca",rKwh:"Lectura final (kWh)",rKw:"Lectura M.D. (kW)",rSello:"Sello encontrado",iNum:"Número",iMarca:"Marca",iClase:"Clase",iTipo:"Tipo",iKwh:"Lectura (kWh)",iKw:"Lectura M.D. (kW)",iSello:"Sello tapa/aro",iSelloMD:"Sello máx. demanda",tc:"Relación de TC",tp:"Relación de TP",constAnt:"Constante anterior",constante:"Constante de medición",v1:"Voltaje F1-N",v2:"Voltaje F2-N",v3:"Voltaje F3-N",a1:"Amperaje F1",a2:"Amperaje F2",a3:"Amperaje F3",fp:"Factor de potencia",obs:"Observaciones",decl:"Declaración"};
 const $=id=>document.getElementById(id);
+
+const db = window.supabase.createClient(
+  "https://wujjamamzetenmhlacku.supabase.co",
+  "sb_publishable_v7ZnupfgRRQEpI85qmiDZg_lMsO3rW9"
+);
+
+async function actualizarSesion() {
+  const { data: { user } } = await db.auth.getUser();
+  $("authPanel").hidden = !!user;
+  $("f").hidden = !user;
+  $("bar").hidden = !user;
+  $("t-reg").hidden = true;
+}
+
+$("btnLogin").onclick = async () => {
+  const { error } = await db.auth.signInWithPassword({
+    email: $("loginEmail").value.trim(),
+    password: $("loginPassword").value
+  });
+
+  if (error) {
+    $("authMsg").textContent = "No se pudo iniciar sesión. Revise sus credenciales.";
+    return;
+  }
+
+  $("loginPassword").value = "";
+  $("authMsg").textContent = "";
+  await actualizarSesion();
+};
 const v=id=>{const e=$(id);if(!e)return"";return e.type==="checkbox"?e.checked:e.value.trim()};
 const norm=s=>String(s).replace(/\s+/g,"").toLowerCase();
 let touched=false, registro=[], folioN=0;
@@ -327,17 +374,45 @@ async function huella(text){
   catch(_){let h=0;for(const ch of text)h=(h*31+ch.charCodeAt(0))>>>0;return h.toString(16).padStart(8,"0")}
 }
 
-$("btnSend").addEventListener("click",async()=>{
-  touched=true; const errs=validate(); render(errs);
-  if(errs.length){showSummary(errs);window.scrollTo({top:$("summary").offsetTop-10,behavior:"smooth"});return}
-  const data={};document.querySelectorAll("#f [id]").forEach(el=>{if(el.matches("input,select,textarea")&&!el.closest("[hidden]"))data[el.id]=v(el.id)});
-  const fecha=new Date();
-  folioN++;
-  const rec={folio:`MI-2026-${String(folioN).padStart(4,"0")}`,fecha:fecha.toLocaleString("es-CR",{dateStyle:"medium",timeStyle:"medium"}),data};
-  rec.hash=await huella(JSON.stringify({folio:rec.folio,fecha:fecha.toISOString(),data}));
-  registro.unshift(rec); $("regCount").textContent=registro.length;
-  showReceipt(rec,true);
+$("btnSend").addEventListener("click", async () => {
+  touched = true;
+  const errs = validate();
+  render(errs);
+
+  if (errs.length) {
+    showSummary(errs);
+    return;
+  }
+
+  const datos = {};
+  document.querySelectorAll("#f input,#f select,#f textarea").forEach(el => {
+    if (el.id && !el.closest("[hidden]")) datos[el.id] = v(el.id);
+  });
+
+  const btn = $("btnSend");
+  btn.disabled = true;
+  btn.textContent = "Guardando...";
+
+  try {
+    const { data, error } = await db.functions.invoke("guardar-reporte", {
+      body: datos
+    });
+
+    if (error) throw error;
+    if (!data?.ok) throw new Error("No se confirmó el guardado");
+
+    alert("Reporte guardado correctamente en Supabase. ID: " + data.id +
+          "\nEl PDF y correo todavía no están configurados.");
+    resetForm();
+  } catch (error) {
+    console.error(error);
+    alert("No se pudo guardar el reporte. Revise la consola.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Enviar reporte";
+  }
 });
+
 
 const GROUPS=[
   ["Orden",["orden","contrato","tipo","tecnico","cliente","local","direccion"]],
@@ -374,7 +449,7 @@ $("regBody").addEventListener("keydown",e=>{if(e.key==="Enter"){const tr=e.targe
 
 function show(w){
   $("v-form").hidden=w!=="form";$("v-rec").hidden=w!=="rec";$("v-reg").hidden=w!=="reg";
-  $("bar").hidden=w!=="form";
+  $("bar").hidden=w!=="form" || $("f").hidden;
   $("t-form").setAttribute("aria-selected",w==="form"||(w==="rec"&&$("btnBack")?.textContent==="Nuevo reporte"));
   $("t-reg").setAttribute("aria-selected",w==="reg"||(w==="rec"&&$("btnBack")?.textContent!=="Nuevo reporte"));
   if(w==="reg")renderReg();
@@ -389,6 +464,7 @@ const EJEMPLO={orden:"58213",contrato:"348",tipo:"Cambio",tecnico:"Técnico de p
 $("btnFill").onclick=()=>{fill({...EJEMPLO,trafos:"4",rSello:"A-31877",decl:true})};
 
 fill(EJEMPLO); touched=true; render(validate());
+actualizarSesion();
 </script>
 
 </body></html>
