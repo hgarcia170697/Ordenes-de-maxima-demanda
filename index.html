@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: una columna de formulario tipo hoja de orden, secciones numeradas como la hoja física, barra de estado fija abajo */
+/* Layout: formulario para tableta, 6 tarjetas, opciones como botones grandes, tablas compactas para medidores y mediciones, barra fija abajo */
 :root{
   --bg:#f3f5f7; --paper:#ffffff; --ink:#18232d; --muted:#5b6b78; --line:#d5dde3;
   --accent:#1d5b86; --accent-ink:#ffffff; --accent-soft:#e3eef6;
@@ -20,456 +20,619 @@
   --accent:#6fb0de; --accent-ink:#0b1a24; --accent-soft:#1b3446;
   --warn:#f0b45a; --warn-bg:#33270f; --err:#f2958d; --err-bg:#3a1a18; --ok:#7fd3a0; --ok-bg:#15301f; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 120px}
-.wrap{max-width:860px;margin:0 auto}
-header{padding-block:28px 12px;display:grid;gap:6px}
-.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-h1{font-size:clamp(22px,4vw,30px);margin:0;line-height:1.15;text-wrap:balance}
-.lede{color:var(--muted);margin:0;max-width:65ch}
-.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-block:16px 20px;flex-wrap:wrap}
-.tab{background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;font:600 14px var(--sans);color:var(--muted);cursor:pointer}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.45;padding-inline:16px;padding-block:0 110px}
+.wrap{max-width:1080px;margin:0 auto}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:18px 10px}
+.top h1{font-size:22px;margin:0;flex:1;min-width:220px}
+.top h1 small{display:block;font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;flex-wrap:wrap}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:12px 16px;font:600 15px var(--sans);color:var(--muted);cursor:pointer}
 .tab[aria-selected="true"]{color:var(--accent);border-color:var(--accent)}
-.tab .count{font-family:var(--mono);font-size:12px;background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:1px 7px;margin-left:6px}
-.note{background:var(--accent-soft);border-radius:8px;padding:10px 14px;font-size:13.5px;color:var(--ink);margin-bottom:18px}
-section.sec{background:var(--paper);border:1px solid var(--line);border-radius:10px;margin-bottom:14px}
-.sec h2{font-size:15px;margin:0;padding:12px 18px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:baseline}
-.sec h2 .n{font-family:var(--mono);color:var(--accent);font-weight:500}
-.sec h2 .tag{margin-left:auto;font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px 16px;padding:16px 18px}
-.field{display:grid;gap:4px;min-width:0;align-content:start}
-.field.wide{grid-column:1/-1}
-label{font-size:13px;font-weight:600}
-label .req{color:var(--err);margin-left:2px}
-input,select,textarea{font:15px var(--sans);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+.count{font:500 12px var(--mono);background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:1px 7px;margin-left:6px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;margin-bottom:14px}
+.card>h2{font-size:17px;margin:0;padding:14px 20px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:baseline}
+.card>h2 .n{font-family:var(--mono);color:var(--accent);font-weight:500}
+.card>h2 .side{margin-left:auto;font:500 13px var(--sans);color:var(--muted)}
+.body{padding:16px 20px;display:grid;gap:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px 18px}
+[hidden]{display:none!important}
+div.f{display:grid;gap:5px;min-width:0;align-content:start}
+div.f.wide{grid-column:1/-1}
+.lbl{font-size:14px;font-weight:600}
+.opt{font-weight:400;color:var(--muted);font-size:13px}
+input[type=text],input[type=number],input[type=email],input[type=password],select,textarea{font:16px var(--sans);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%;min-width:0;min-height:46px}
 input[type=number]{font-family:var(--mono);font-variant-numeric:tabular-nums}
-input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-input[readonly]{background:var(--bg);color:var(--muted)}
-textarea{min-height:80px;resize:vertical}
-.field.bad-c input,.field.bad-c select{border-color:var(--warn);background:var(--warn-bg)}
-.field.bad-f input,.field.bad-f select,.field.bad-f textarea{border-color:var(--err)}
-.msg{font-size:12.5px;min-height:0}
-.field.bad-c .msg{color:var(--warn);font-weight:500}
-.field.bad-f .msg{color:var(--err)}
-.contract{margin:0 18px 16px;padding:10px 14px;border-radius:8px;font-size:13.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.contract.found{background:var(--ok-bg);color:var(--ok)}
-.contract.missing{background:var(--err-bg);color:var(--err)}
-.contract b{color:var(--ink)}
-.check{display:flex;gap:10px;align-items:flex-start;padding:16px 18px;font-size:14px}
-.check input{width:18px;height:18px;margin-top:2px;flex:none}
+textarea{min-height:84px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,.chip input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip span{display:inline-flex;align-items:center;min-height:46px;padding:8px 16px;border:1px solid var(--line);border-radius:23px;background:var(--paper);cursor:pointer;font-size:15px;font-weight:500;user-select:none}
+.chip input:checked+span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.hint{font-size:13px;color:var(--muted)}
+.msg{font-size:13px;color:var(--err)}
+.msg:empty{display:none}
+.bad input[type=text],.bad input[type=number],.bad select,.bad textarea{border-color:var(--err);background:var(--err-bg)}
+.bad .chips .chip span{border-color:var(--err)}
+.bad.c input{border-color:var(--warn);background:var(--warn-bg)}
+.bad.c .msg{color:var(--warn);font-weight:600}
+.calc{font:500 13px var(--mono);color:var(--muted)}
+.fixed{display:flex;align-items:center;min-height:46px;padding:0 14px;border-radius:8px;background:var(--bg);font:500 16px var(--mono)}
+.tw{overflow-x:auto}
+table.t{border-collapse:collapse;width:100%;min-width:520px}
+table.t th,table.t td{padding:6px 8px;text-align:left;vertical-align:top}
+table.t thead th{font:600 13px var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--line)}
+table.t tbody th{font-size:14px;font-weight:600;white-space:nowrap;padding-top:18px;width:1%}
+table.t td .msg{display:block;margin-top:3px}
+table.t td.na{color:var(--muted);padding-top:18px}
+.sub{display:block;font:500 12px var(--mono);color:var(--muted);margin-bottom:2px}
+.expect{font:500 12px var(--mono);color:var(--muted);margin-top:3px;display:block}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.ph{border:1px dashed var(--line);border-radius:10px;padding:12px;display:grid;gap:8px;align-content:start;background:var(--paper)}
+.ph.has{border-style:solid;border-color:var(--ok)}
+.ph.bad{border-color:var(--err);background:var(--err-bg)}
+.ph-t{font-size:14px;font-weight:600}
+.ph-add{display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:8px;border:1px solid var(--accent);color:var(--accent);font-weight:600;font-size:14px;cursor:pointer}
+.ph-add.off{opacity:.4;pointer-events:none}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap}
+.thumbs:empty{display:none}
+.thumb{position:relative;width:64px;height:64px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb button{position:absolute;top:2px;right:2px;width:26px;height:26px;border-radius:13px;border:0;background:var(--paper);color:var(--ink);font:600 15px var(--sans);cursor:pointer;padding:0}
+.authmsg{color:var(--err);font-size:13px;grid-column:1/-1}.authmsg:empty{display:none}
+.decl{display:flex;gap:12px;align-items:center;font-size:15px;cursor:pointer}
+.decl input{width:24px;height:24px;flex:none}
 .bar{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
-.bar-in{max-width:860px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.status{display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:0}
-.pill{font:500 12.5px var(--mono);padding:4px 10px;border-radius:20px}
-.pill.c{background:var(--warn-bg);color:var(--warn)}
+.bar-in{max-width:1080px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.status{flex:1;min-width:0;display:flex;gap:8px;flex-wrap:wrap}
+.pill{font:600 13px var(--sans);padding:6px 12px;border-radius:20px;border:0;cursor:pointer}
 .pill.f{background:var(--err-bg);color:var(--err)}
-.pill.ok{background:var(--ok-bg);color:var(--ok)}
-.btn{font:600 14px var(--sans);border-radius:8px;padding:10px 18px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+.pill.c{background:var(--warn-bg);color:var(--warn)}
+.pill.ok{background:var(--ok-bg);color:var(--ok);cursor:default}
+.btn{font:600 15px var(--sans);border-radius:10px;padding:12px 22px;min-height:48px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
 .btn.ghost{background:transparent;color:var(--accent)}
-.summary{background:var(--err-bg);border:1px solid var(--err);border-radius:10px;padding:14px 18px;margin-bottom:14px}
-.summary h3{margin:0 0 6px;font-size:15px;color:var(--err)}
-.summary ul{margin:0;padding-left:20px;font-size:14px}
-.summary a{color:var(--ink)}
-/* comprobante */
-.receipt{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.r-head{padding:18px;border-bottom:1px solid var(--line);display:grid;gap:4px}
-.lock{display:inline-flex;gap:6px;align-items:center;font:600 12px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ok);background:var(--ok-bg);padding:4px 10px;border-radius:20px;width:max-content}
-.r-head h2{margin:4px 0 0;font-size:20px}
-.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 18px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:13.5px}
-.meta dt{color:var(--muted);font-size:12px}
-.meta dd{margin:0;font-family:var(--mono);word-break:break-all}
-.r-sec{padding:12px 18px;border-bottom:1px solid var(--line)}
-.r-sec h3{font-size:13px;margin:0 0 8px;color:var(--accent)}
-.r-sec dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px 18px;margin:0;font-size:13.5px}
+.btn.small{padding:8px 14px;min-height:40px;font-size:14px}
+.receipt{background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.r-head{padding:18px 20px;border-bottom:1px solid var(--line);display:grid;gap:6px}
+.lock{font:600 12px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ok);background:var(--ok-bg);padding:4px 10px;border-radius:20px;width:max-content}
+.r-head h2{margin:0;font-size:20px}
+.r-sec{padding:12px 20px;border-bottom:1px solid var(--line)}
+.r-sec h3{font-size:13px;margin:0 0 8px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
+.r-sec dl{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px 18px;margin:0;font-size:14px}
 .r-sec dt{color:var(--muted);font-size:12px}
-.r-sec dd{margin:0}
-.r-foot{padding:14px 18px;font-size:13px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-.tablewrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:10px}
-table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px}
-th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line)}
-th{font:600 12px var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-td.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
-tbody tr{cursor:pointer}
-tbody tr:hover{background:var(--accent-soft)}
-.empty{padding:28px 18px;text-align:center;color:var(--muted)}
-.contracts{margin-top:18px}
-.contracts summary{cursor:pointer;font-weight:600;font-size:14px;padding-block:6px}
-@media (prefers-reduced-motion:no-preference){.btn{transition:filter .15s}.btn:hover{filter:brightness(1.08)}}
+.r-sec dd{margin:0;word-break:break-word}
+.r-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.r-photos figure{margin:0;display:grid;gap:4px;font-size:12px;color:var(--muted)}
+.r-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.r-foot{padding:14px 20px;display:flex;justify-content:flex-end}
+table.reg{border-collapse:collapse;width:100%;min-width:680px;font-size:14px;background:var(--paper)}
+table.reg th,table.reg td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line)}
+table.reg th{font:600 12px var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+table.reg td.mono{font-family:var(--mono)}
+table.reg tbody tr{cursor:pointer}
+table.reg tbody tr:hover{background:var(--accent-soft)}
+.regbox{border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+.empty{padding:28px;text-align:center;color:var(--muted);background:var(--paper)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 </style>
 
 <div class="wrap">
-  <header>
-    <span class="eyebrow">Coopeguanacaste · Órdenes de máxima demanda · Prototipo</span>
-    <h1>Reporte de medición indirecta</h1>
-    <p class="lede">Simulacro del formulario digital. El técnico llena y envía; el sistema revisa contra el contrato y no deja enviar datos que no coinciden. Una vez enviado, el reporte queda bloqueado y solo Hazel lo ve.</p>
-  </header>
-
-  <div class="tabs" role="tablist">
-    <button class="tab" role="tab" id="t-form" aria-selected="true">Vista del técnico</button>
-    <button class="tab" role="tab" id="t-reg" aria-selected="false">Registro de Hazel <span class="count" id="regCount">0</span></button>
+  <div class="top">
+    <h1><small>Coopeguanacaste</small>Orden de medición indirecta</h1>
+    <span class="hint" id="sesionCorreo" hidden></span>
+    <button class="btn ghost small" type="button" id="btnSalir" hidden>Cerrar sesión</button>
+    <button class="btn ghost small" type="button" id="btnNew" hidden>Limpiar formulario</button>
+  </div>
+  <div class="tabs" id="tabsApp" role="tablist" hidden>
+    <button class="tab" role="tab" id="t-form" aria-selected="true">Nuevo reporte</button>
+    <button class="tab" role="tab" id="t-mios" aria-selected="false">Mis reportes</button>
+    <button class="tab" role="tab" id="t-reg" aria-selected="false" hidden>Registro de Hazel</button>
   </div>
 
-  <!-- ===== Vista del técnico ===== -->
-  <div id="v-form">
-    <div class="note"><b>Datos de ejemplo.</b> El formulario abre con un caso de prueba: el contrato 348 tiene 4 transformadores y el técnico puso 3. Corrija los avisos para poder enviar.</div>
-    <div id="summary" class="summary" hidden></div>
-    <section class="sec" id="authPanel">
-      <h2>Acceso de técnico</h2>
+  <section class="card" id="authPanel">
+    <h2>Acceso a reportes</h2>
+    <div class="body">
       <div class="grid">
-        <div class="field">
-          <label for="loginEmail">Correo electrónico</label>
-          <input id="loginEmail" type="email" autocomplete="username">
-        </div>
-        <div class="field">
-          <label for="loginPassword">Contraseña</label>
-          <input id="loginPassword" type="password" autocomplete="current-password">
-        </div>
-        <div class="field">
-          <button class="btn" type="button" id="btnLogin">Iniciar sesión</button>
-          <span class="msg" id="authMsg"></span>
+        <div class="f"><label class="lbl" for="loginEmail">Correo electrónico</label><input type="email" id="loginEmail" autocomplete="username"></div>
+        <div class="f"><label class="lbl" for="loginPassword">Contraseña</label><input type="password" id="loginPassword" autocomplete="current-password"></div>
+      </div>
+      <div><button class="btn" type="button" id="btnLogin">Iniciar sesión</button> <span id="authMsg" class="authmsg"></span></div>
+    </div>
+  </section>
+
+  <form id="f" novalidate hidden>
+    <section class="card">
+      <h2><span class="n">1</span>Orden y cliente</h2>
+      <div class="body">
+        <div class="f" data-k="tipo"><span class="lbl">Tipo de orden</span><div class="chips" id="c-tipo"></div><span class="msg"></span></div>
+        <div class="grid">
+          <div class="f" data-k="orden"><label class="lbl" for="orden">N.º de orden</label><input type="text" id="orden" inputmode="numeric"><span class="msg"></span></div>
+          <div class="f" data-k="contrato"><label class="lbl" for="contrato">N.º de contrato <span class="opt">(si existe)</span></label><input type="text" id="contrato" inputmode="numeric"><span class="msg"></span></div>
+          <div class="f" data-k="tecnico"><label class="lbl" for="tecnico">Técnico</label><input type="text" id="tecnico"><span class="msg"></span></div>
+          <div class="f" data-k="cliente"><label class="lbl" for="cliente">Cliente</label><input type="text" id="cliente"><span class="msg"></span></div>
+          <div class="f" data-k="canton"><label class="lbl" for="canton">Cantón</label><select id="canton"></select><span class="msg"></span></div>
+          <div class="f" data-k="distrito"><label class="lbl" for="distrito">Distrito</label><select id="distrito"></select><span class="msg"></span></div>
+          <div class="f wide" data-k="direccion"><label class="lbl" for="direccion">Señas <span class="opt">(opcional)</span></label><input type="text" id="direccion"><span class="msg"></span></div>
         </div>
       </div>
     </section>
-    <form id="f" novalidate>
-      <section class="sec">
-        <h2><span class="n">0</span>Identificación de la orden</h2>
+
+    <section class="card">
+      <h2><span class="n">2</span>Servicio</h2>
+      <div class="body">
         <div class="grid">
-          <div class="field" data-k="orden"><label for="orden">Número de orden<span class="req">*</span></label><input id="orden" inputmode="numeric"><span class="msg"></span></div>
-          <div class="field" data-k="contrato"><label for="contrato">Número de contrato<span class="req">*</span></label><input id="contrato" inputmode="numeric"><span class="msg"></span></div>
-          <div class="field" data-k="tipo"><label for="tipo">Tipo de orden<span class="req">*</span></label>
-            <select id="tipo"><option value="">Seleccione…</option><option>Cambio</option><option>Retiro</option><option>Instalación servicio nuevo</option><option>Reinstalación</option></select><span class="msg"></span></div>
-          <div class="field" data-k="tecnico"><label for="tecnico">Técnico responsable<span class="req">*</span></label><input id="tecnico"><span class="msg"></span></div>
+          <div class="f" data-k="medicion"><span class="lbl">Medición</span><div class="chips" id="c-medicion"></div><span class="msg"></span></div>
+          <div class="f" data-k="sistema"><span class="lbl">Sistema</span><div class="chips" id="c-sistema"></div><span class="msg"></span></div>
+          <div class="f" data-k="conexion" id="w-conexion"><span class="lbl">Conexión</span><div class="chips" id="c-conexion"></div><span class="msg"></span></div>
         </div>
-        <div id="cInfo" class="contract" hidden></div>
-      </section>
-
-      <section class="sec">
-        <h2><span class="n">1</span>Datos generales del servicio</h2>
+        <div class="f" data-k="voltaje"><span class="lbl">Voltaje de servicio</span><div class="chips" id="c-voltaje"></div><span class="hint" id="h-voltaje"></span><span class="msg"></span></div>
         <div class="grid">
-          <div class="field" data-k="cliente"><label for="cliente">Nombre del cliente</label><input id="cliente" readonly placeholder="Se llena con el contrato"><span class="msg"></span></div>
-          <div class="field" data-k="local"><label for="local">Localización</label><input id="local" readonly placeholder="Se llena con el contrato"><span class="msg"></span></div>
-          <div class="field wide" data-k="direccion"><label for="direccion">Dirección / señas</label><input id="direccion"><span class="msg"></span></div>
+          <div class="f" data-k="trafos"><label class="lbl" for="trafos">Transformadores</label><input type="number" id="trafos" min="1" step="1" inputmode="numeric"><span class="msg"></span></div>
+          <div class="f" data-k="kva"><label class="lbl" for="kva">Capacidad (kVA)</label><input type="number" id="kva" min="0" step="any" inputmode="decimal"><span class="msg"></span></div>
+          <div class="f" data-k="macro"><span class="lbl">¿Medición macro?</span><div class="chips" id="c-macro"></div><span class="msg"></span></div>
+          <div class="f" data-k="medAsoc" id="w-medAsoc"><label class="lbl" for="medAsoc">Medidores asociados</label><input type="number" id="medAsoc" min="1" step="1" inputmode="numeric"><span class="msg"></span></div>
         </div>
-      </section>
-
-      <section class="sec">
-        <h2><span class="n">2</span>Características del servicio<span class="tag">Se valida contra contrato</span></h2>
         <div class="grid">
-          <div class="field" data-k="sistema"><label for="sistema">Sistema<span class="req">*</span></label>
-            <select id="sistema"><option value="">Seleccione…</option><option>Monofásico</option><option>Trifásico</option></select><span class="msg"></span></div>
-          <div class="field" data-k="voltaje"><label for="voltaje">Voltaje de servicio (V)<span class="req">*</span></label>
-            <select id="voltaje"><option value="">Seleccione…</option><option>120/240</option><option>120/208</option><option>240/480</option><option>277/480</option></select><span class="msg"></span></div>
-          <div class="field" data-k="conexion"><label for="conexion">Conexión<span class="req">*</span></label>
-            <select id="conexion"><option value="">Seleccione…</option><option>Estrella-estrella</option><option>Estrella-delta</option><option>Otra</option></select><span class="msg"></span></div>
-          <div class="field" data-k="trafos"><label for="trafos">Cantidad de transformadores<span class="req">*</span></label><input id="trafos" type="number" min="1" step="1"><span class="msg"></span></div>
-          <div class="field" data-k="kva"><label for="kva">Capacidad del banco (kVA)<span class="req">*</span></label><input id="kva" type="number" min="0" step="any"><span class="msg"></span></div>
-          <div class="field" data-k="cliTipo"><label for="cliTipo">Tipo de cliente</label>
-            <select id="cliTipo"><option value="">Seleccione…</option><option>Residencial</option><option>Comercial</option><option>Industrial</option></select><span class="msg"></span></div>
-          <div class="field" data-k="acometida"><label for="acometida">Acometida</label>
-            <select id="acometida"><option value="">Seleccione…</option><option>Aérea</option><option>Subterránea</option></select><span class="msg"></span></div>
-          <div class="field" data-k="macro"><label for="macro">¿Medición macro?<span class="req">*</span></label>
-            <select id="macro"><option value="">Seleccione…</option><option>No</option><option>Sí</option></select><span class="msg"></span></div>
-          <div class="field" data-k="medAsoc" id="w-medAsoc" hidden><label for="medAsoc">Medidores individuales asociados<span class="req">*</span></label><input id="medAsoc" type="number" min="1" step="1"><span class="msg"></span></div>
+          <div class="f" data-k="cliTipo"><span class="lbl">Cliente <span class="opt">(opcional)</span></span><div class="chips" id="c-cliTipo"></div></div>
+          <div class="f" data-k="acometida"><span class="lbl">Acometida <span class="opt">(opcional)</span></span><div class="chips" id="c-acometida"></div></div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="sec" id="s-ret">
-        <h2><span class="n">3</span>Datos del medidor retirado<span class="tag">Obligatorio en cambio o retiro</span></h2>
+    <section class="card">
+      <h2><span class="n">3</span>Medidores</h2>
+      <div class="body tw">
+        <table class="t">
+          <thead><tr><th></th><th class="ret">Retirado</th><th>Instalado</th></tr></thead>
+          <tbody>
+            <tr><th>Número</th><td class="ret f" data-k="rNum"><input type="text" id="rNum"><span class="msg"></span></td><td class="f" data-k="iNum"><input type="text" id="iNum"><span class="msg"></span></td></tr>
+            <tr><th>Marca</th><td class="ret f" data-k="rMarca"><input type="text" id="rMarca"><span class="msg"></span></td><td class="f" data-k="iMarca"><input type="text" id="iMarca"><span class="msg"></span></td></tr>
+            <tr><th>Clase / tipo</th><td class="ret na">—</td><td class="f" data-k="iClase"><input type="text" id="iClase" placeholder="Ej. 20 · OpenWay"><span class="msg"></span></td></tr>
+            <tr><th>Lectura kWh</th><td class="ret f" data-k="rKwh"><input type="number" id="rKwh" step="any" inputmode="decimal"><span class="msg"></span></td><td class="f" data-k="iKwh"><input type="number" id="iKwh" step="any" inputmode="decimal"><span class="msg"></span></td></tr>
+            <tr><th>Lectura M.D. kW</th><td class="ret f" data-k="rKw"><input type="number" id="rKw" step="any" inputmode="decimal"><span class="msg"></span></td><td class="f" data-k="iKw"><input type="number" id="iKw" step="any" inputmode="decimal"><span class="msg"></span></td></tr>
+            <tr><th>Sello tapa/aro</th><td class="ret f" data-k="rSello"><input type="text" id="rSello"><span class="msg"></span></td><td class="f" data-k="iSello"><input type="text" id="iSello"><span class="msg"></span></td></tr>
+            <tr><th>Sello M.D.</th><td class="ret na">—</td><td class="f" data-k="iSelloMD"><input type="text" id="iSelloMD"><span class="msg"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="n">4</span>Transformadores y constante</h2>
+      <div class="body">
+        <div class="f" data-k="tc"><span class="lbl">Bobina (TC)</span><div class="chips" id="c-tc"></div><span class="hint" id="h-tc"></span><span class="msg"></span></div>
         <div class="grid">
-          <div class="field" data-k="rNum"><label for="rNum">Número<span class="req">*</span></label><input id="rNum"><span class="msg"></span></div>
-          <div class="field" data-k="rMarca"><label for="rMarca">Marca<span class="req">*</span></label><input id="rMarca"><span class="msg"></span></div>
-          <div class="field" data-k="rKwh"><label for="rKwh">Lectura final energía (kWh)<span class="req">*</span></label><input id="rKwh" type="number" step="any"><span class="msg"></span></div>
-          <div class="field" data-k="rKw"><label for="rKw">Lectura M.D. (kW)<span class="req">*</span></label><input id="rKw" type="number" step="any"><span class="msg"></span></div>
-          <div class="field" data-k="rSello"><label for="rSello">N.º sello tapa/aro encontrado<span class="req">*</span></label><input id="rSello"><span class="msg"></span></div>
+          <div class="f" id="w-tp"><span class="lbl">TP</span><div class="fixed">120:1</div></div>
+          <div class="f" data-k="constante"><label class="lbl" for="constante">Constante</label><input type="number" id="constante" step="any" inputmode="decimal"><span class="calc" id="calc"></span><span class="msg"></span></div>
+          <div class="f" data-k="constAnt" id="w-constAnt"><label class="lbl" for="constAnt">Constante anterior</label><input type="number" id="constAnt" step="any" inputmode="decimal"><span class="msg"></span></div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="sec">
-        <h2><span class="n">4</span>Datos del medidor instalado</h2>
-        <div class="grid">
-          <div class="field" data-k="iNum"><label for="iNum">Número<span class="req">*</span></label><input id="iNum"><span class="msg"></span></div>
-          <div class="field" data-k="iMarca"><label for="iMarca">Marca<span class="req">*</span></label><input id="iMarca"><span class="msg"></span></div>
-          <div class="field" data-k="iClase"><label for="iClase">Clase<span class="req">*</span></label><input id="iClase"><span class="msg"></span></div>
-          <div class="field" data-k="iTipo"><label for="iTipo">Tipo</label><input id="iTipo"><span class="msg"></span></div>
-          <div class="field" data-k="iKwh"><label for="iKwh">Lectura energía (kWh)<span class="req">*</span></label><input id="iKwh" type="number" step="any"><span class="msg"></span></div>
-          <div class="field" data-k="iKw"><label for="iKw">Lectura M.D. (kW)<span class="req">*</span></label><input id="iKw" type="number" step="any"><span class="msg"></span></div>
-          <div class="field" data-k="iSello"><label for="iSello">N.º sello tapa/aro colocado<span class="req">*</span></label><input id="iSello"><span class="msg"></span></div>
-          <div class="field" data-k="iSelloMD"><label for="iSelloMD">N.º sello máxima demanda<span class="req">*</span></label><input id="iSelloMD"><span class="msg"></span></div>
-        </div>
-      </section>
+    <section class="card">
+      <h2><span class="n">5</span>Mediciones en sitio</h2>
+      <div class="body tw">
+        <table class="t">
+          <thead><tr><th></th><th>Fase 1</th><th>Fase 2</th><th class="tri">Fase 3</th></tr></thead>
+          <tbody>
+            <tr><th>Voltaje F-N (V)</th>
+              <td class="f" data-k="v1"><input type="number" id="v1" step="any" inputmode="decimal"><span class="expect" id="e-v1"></span><span class="msg"></span></td>
+              <td class="f" data-k="v2"><input type="number" id="v2" step="any" inputmode="decimal"><span class="expect" id="e-v2"></span><span class="msg"></span></td>
+              <td class="f tri" data-k="v3"><input type="number" id="v3" step="any" inputmode="decimal"><span class="expect" id="e-v3"></span><span class="msg"></span></td></tr>
+            <tr><th>Voltaje entre fases (V)</th>
+              <td class="f" data-k="f12"><span class="sub">F1-F2</span><input type="number" id="f12" step="any" inputmode="decimal"><span class="expect" id="e-f12"></span><span class="msg"></span></td>
+              <td class="f tri" data-k="f23"><span class="sub">F2-F3</span><input type="number" id="f23" step="any" inputmode="decimal"><span class="expect" id="e-f23"></span><span class="msg"></span></td>
+              <td class="f tri" data-k="f31"><span class="sub">F3-F1</span><input type="number" id="f31" step="any" inputmode="decimal"><span class="expect" id="e-f31"></span><span class="msg"></span></td></tr>
+            <tr><th>Amperaje (A)</th>
+              <td class="f" data-k="a1"><input type="number" id="a1" step="any" inputmode="decimal"><span class="msg"></span></td>
+              <td class="f" data-k="a2"><input type="number" id="a2" step="any" inputmode="decimal"><span class="msg"></span></td>
+              <td class="f tri" data-k="a3"><input type="number" id="a3" step="any" inputmode="decimal"><span class="msg"></span></td></tr>
+            <tr><th>Factor de potencia <span class="opt">(opcional)</span></th>
+              <td class="f" data-k="fp"><input type="number" id="fp" step="any" min="0" max="1" inputmode="decimal"><span class="msg"></span></td><td></td><td class="tri"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-      <section class="sec">
-        <h2><span class="n">5</span>Transformadores de corriente / potencial<span class="tag">Se valida contra contrato</span></h2>
-        <div class="grid">
-          <div class="field" data-k="tc"><label for="tc">Relación de TC<span class="req">*</span></label><input id="tc" placeholder="Ej. 600/5"><span class="msg"></span></div>
-          <div class="field" data-k="tp"><label for="tp">Relación de TP</label><input id="tp" placeholder="Si no aplica, dejar vacío"><span class="msg"></span></div>
-          <div class="field" data-k="constAnt" id="w-constAnt"><label for="constAnt">Constante anterior<span class="req">*</span></label><input id="constAnt" type="number" step="any"><span class="msg"></span></div>
-          <div class="field" data-k="constante"><label for="constante">Constante de medición<span class="req">*</span></label><input id="constante" type="number" step="any"><span class="msg"></span></div>
-        </div>
-      </section>
+    <section class="card">
+      <h2><span class="n">6</span>Fotos<span class="side" id="fotoCount">0 de 10</span></h2>
+      <div class="body"><div class="photos" id="photos"></div></div>
+    </section>
 
-      <section class="sec">
-        <h2><span class="n">6</span>Mediciones en sitio</h2>
-        <div class="grid">
-          <div class="field" data-k="v1"><label for="v1">Voltaje F1-N (V)<span class="req">*</span></label><input id="v1" type="number" step="any"><span class="msg"></span></div>
-          <div class="field" data-k="v2"><label for="v2">Voltaje F2-N (V)<span class="req">*</span></label><input id="v2" type="number" step="any"><span class="msg"></span></div>
-          <div class="field" data-k="v3" id="w-v3"><label for="v3">Voltaje F3-N (V)<span class="req">*</span></label><input id="v3" type="number" step="any"><span class="msg"></span></div>
-          <div class="field" data-k="a1"><label for="a1">Amperaje F1 (A)<span class="req">*</span></label><input id="a1" type="number" step="any"><span class="msg"></span></div>
-          <div class="field" data-k="a2"><label for="a2">Amperaje F2 (A)<span class="req">*</span></label><input id="a2" type="number" step="any"><span class="msg"></span></div>
-          <div class="field" data-k="a3" id="w-a3"><label for="a3">Amperaje F3 (A)<span class="req">*</span></label><input id="a3" type="number" step="any"><span class="msg"></span></div>
-          <div class="field" data-k="fp"><label for="fp">Factor de potencia</label><input id="fp" type="number" step="any" min="0" max="1"><span class="msg"></span></div>
-        </div>
-      </section>
+    <section class="card">
+      <h2><span class="n">7</span>Cierre</h2>
+      <div class="body">
+        <div class="f" data-k="obs"><label class="lbl" for="obs">Observaciones <span class="opt" id="obsOpt">(opcional)</span></label><textarea id="obs"></textarea><span class="msg"></span></div>
+        <div class="f" data-k="decl"><label class="decl" for="decl"><input type="checkbox" id="decl">Confirmo que los datos son los encontrados en sitio.</label><span class="msg"></span></div>
+      </div>
+    </section>
+  </form>
 
-      <section class="sec">
-        <h2><span class="n">7</span>Observaciones y cierre</h2>
-        <div class="grid">
-          <div class="field wide" data-k="obs"><label for="obs">Notas / observaciones</label><textarea id="obs"></textarea><span class="msg"></span></div>
-        </div>
-        <div class="field" data-k="decl" style="padding:0 0 4px"><label class="check" for="decl"><input type="checkbox" id="decl"><span>Declaro que los datos corresponden a lo encontrado en sitio. Entiendo que, una vez enviado, el reporte no se puede modificar.<span class="req">*</span></span></label><span class="msg" style="padding:0 18px 12px"></span></div>
-      </section>
-    </form>
-
-    <details class="contracts">
-      <summary>Contratos de prueba cargados en el simulacro</summary>
-      <p class="lede" style="font-size:13.5px">En la versión real estos datos vienen de la base de la cooperativa y el técnico no los ve. Aquí se muestran solo para probar.</p>
-      <div class="tablewrap"><table><thead><tr><th>Contrato</th><th>Cliente</th><th>Sistema</th><th>Voltaje</th><th>Transf.</th><th>kVA</th><th>TC</th><th>Constante</th><th>Macro</th></tr></thead><tbody id="cTable"></tbody></table></div>
-    </details>
-  </div>
-
-  <!-- ===== Comprobante ===== -->
   <div id="v-rec" hidden></div>
-
-  <!-- ===== Registro de Hazel ===== -->
   <div id="v-reg" hidden>
-    <div class="note">Solo Hazel tiene acceso a esta vista. Cada reporte llega por correo como PDF y queda aquí con su huella digital. Si alguien altera una copia, la huella deja de coincidir.</div>
-    <div class="tablewrap"><table><thead><tr><th>Folio</th><th>Enviado</th><th>Orden</th><th>Contrato</th><th>Técnico</th><th>Tipo</th><th>Huella</th></tr></thead><tbody id="regBody"></tbody></table>
-    <div id="regEmpty" class="empty">Todavía no hay reportes enviados en este simulacro.</div></div>
+    <section class="card"><h2 id="tituloRegistro">Mis reportes</h2>
+      <div class="body"><p class="hint" id="infoRegistro">Solo verá los reportes que usted envió.</p></div></section>
+    <div class="regbox"><table class="reg"><thead><tr><th>Folio</th><th>Enviado</th><th>Orden</th><th>Cliente</th><th>Medición</th><th>Técnico</th><th>PDF</th></tr></thead><tbody id="regBody"></tbody></table>
+    <div id="regEmpty" class="empty">Cargando reportes…</div></div>
   </div>
 </div>
 
-<div class="bar" id="bar"><div class="bar-in">
+<div class="bar" id="bar" hidden><div class="bar-in">
   <div class="status" id="status"></div>
-  <button class="btn ghost" type="button" id="btnFill">Llenar caso correcto</button>
   <button class="btn" type="button" id="btnSend">Enviar reporte</button>
 </div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-
 <script>
-const CONTRATOS={
-  "348":{cliente:"Condominio Vista Mar (ejemplo)",local:"Tamarindo, Santa Cruz",sistema:"Trifásico",voltaje:"120/208",conexion:"Estrella-estrella",trafos:4,kva:500,tc:"400/5",tp:"",constante:80,macro:"Sí"},
-  "1205":{cliente:"Quebrador (ejemplo)",local:"Nicoya",sistema:"Trifásico",voltaje:"277/480",conexion:"Estrella-estrella",trafos:3,kva:300,tc:"600/5",tp:"",constante:122.4,macro:"No"},
-  "2210":{cliente:"Hotel Brisas del Pacífico (ejemplo)",local:"Liberia",sistema:"Monofásico",voltaje:"120/240",conexion:"Otra",trafos:1,kva:100,tc:"200/5",tp:"",constante:40,macro:"No"}
-};
-const LABELS={orden:"Número de orden",contrato:"Número de contrato",tipo:"Tipo de orden",tecnico:"Técnico responsable",cliente:"Cliente",local:"Localización",direccion:"Dirección",sistema:"Sistema",voltaje:"Voltaje de servicio",conexion:"Conexión",trafos:"Cantidad de transformadores",kva:"Capacidad del banco (kVA)",cliTipo:"Tipo de cliente",acometida:"Acometida",macro:"¿Medición macro?",medAsoc:"Medidores asociados",rNum:"Número",rMarca:"Marca",rKwh:"Lectura final (kWh)",rKw:"Lectura M.D. (kW)",rSello:"Sello encontrado",iNum:"Número",iMarca:"Marca",iClase:"Clase",iTipo:"Tipo",iKwh:"Lectura (kWh)",iKw:"Lectura M.D. (kW)",iSello:"Sello tapa/aro",iSelloMD:"Sello máx. demanda",tc:"Relación de TC",tp:"Relación de TP",constAnt:"Constante anterior",constante:"Constante de medición",v1:"Voltaje F1-N",v2:"Voltaje F2-N",v3:"Voltaje F3-N",a1:"Amperaje F1",a2:"Amperaje F2",a3:"Amperaje F3",fp:"Factor de potencia",obs:"Observaciones",decl:"Declaración"};
 const $=id=>document.getElementById(id);
-
 const db = window.supabase.createClient(
   "https://wujjamamzetenmhlacku.supabase.co",
   "sb_publishable_v7ZnupfgRRQEpI85qmiDZg_lMsO3rW9"
 );
+let sesionActiva=false, usuarioActual=null, esHazel=false, vistaLista="mios", ultimaVista="form";
+let reportesVista=[], envioExitoso=false;
+const PDF_BUCKET="reportes-pdf";
 
-async function actualizarSesion() {
-  const { data: { user } } = await db.auth.getUser();
-  $("authPanel").hidden = !!user;
-  $("f").hidden = !user;
-  $("bar").hidden = !user;
-  $("t-reg").hidden = true;
+function actualizarVistaSesion(){
+  $("authPanel").hidden=sesionActiva;
+  $("tabsApp").hidden=!sesionActiva;
+  $("t-reg").hidden=!sesionActiva||!esHazel;
+  $("btnNew").hidden=!sesionActiva;
+  $("btnSalir").hidden=!sesionActiva;
+  $("sesionCorreo").hidden=!sesionActiva;
+  $("sesionCorreo").textContent=sesionActiva?usuarioActual?.email||"":"";
+  $("f").hidden=!sesionActiva;
+  $("v-rec").hidden=true;
+  $("v-reg").hidden=true;
+  $("bar").hidden=!sesionActiva;
+  $("t-form").setAttribute("aria-selected","true");
+  $("t-mios").setAttribute("aria-selected","false");
+  $("t-reg").setAttribute("aria-selected","false");
 }
-
-$("btnLogin").onclick = async () => {
-  const { error } = await db.auth.signInWithPassword({
-    email: $("loginEmail").value.trim(),
-    password: $("loginPassword").value
-  });
-
-  if (error) {
-    $("authMsg").textContent = "No se pudo iniciar sesión. Revise sus credenciales.";
+async function actualizarSesion(){
+  const {data:{user},error}=await db.auth.getUser();
+  if(error||!user){
+    sesionActiva=false;usuarioActual=null;esHazel=false;reportesVista=[];
+    actualizarVistaSesion();
     return;
   }
+  // La tabla de roles solo deja leer el rol del usuario autenticado.
+  const {data:rol,error:errRol}=await db.from("roles_usuarios")
+    .select("rol").eq("usuario_id",user.id).maybeSingle();
+  if(errRol){
+    console.error("Error consultando rol:",errRol);
+    sesionActiva=false;usuarioActual=null;esHazel=false;
+    actualizarVistaSesion();
+    $("authMsg").textContent="No se pudieron verificar los permisos. Configure roles_usuarios en Supabase.";
+    return;
+  }
+  usuarioActual=user;esHazel=rol?.rol==="hazel";sesionActiva=true;
+  actualizarVistaSesion();run();
+}
+$("btnLogin").addEventListener("click",async()=>{
+  $("authMsg").textContent="";$("btnLogin").disabled=true;
+  try{
+    const {error}=await db.auth.signInWithPassword({
+      email:$("loginEmail").value.trim(),password:$("loginPassword").value
+    });
+    if(error)throw error;
+    $("loginPassword").value="";
+    await actualizarSesion();
+  }catch(e){
+    console.error("Inicio de sesión:",e);
+    $("authMsg").textContent="No se pudo iniciar sesión. Verifique sus credenciales.";
+  }finally{$("btnLogin").disabled=false;}
+});
+$("btnSalir").addEventListener("click",async()=>{
+  const {error}=await db.auth.signOut();
+  if(error){alert("No se pudo cerrar sesión. Intente otra vez.");return;}
+  // Limpiar los resultados del usuario anterior al cambiar de cuenta.
+  reportesVista=[];$("regBody").innerHTML="";$("v-rec").innerHTML="";
+  $("authMsg").textContent="";
+  sesionActiva=false;usuarioActual=null;esHazel=false;
+  // Evitar que el siguiente usuario vea o reutilice datos de la sesión anterior.
+  Object.values(fotos).flat().forEach(x=>{if(x.url?.startsWith("blob:"))URL.revokeObjectURL(x.url)});
+  fotos={};drawPhotos();touched=false;envioExitoso=false;fill({});
+  $("btnSend").disabled=false;$("btnSend").textContent="Enviar reporte";
+  actualizarVistaSesion();
+});
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 
-  $("loginPassword").value = "";
-  $("authMsg").textContent = "";
-  await actualizarSesion();
-};
-const v=id=>{const e=$(id);if(!e)return"";return e.type==="checkbox"?e.checked:e.value.trim()};
-const norm=s=>String(s).replace(/\s+/g,"").toLowerCase();
-let touched=false, registro=[], folioN=0;
+const GEO={"Liberia":["Liberia","Cañas Dulces","Mayorga","Nacascolo","Curubandé"],"Nicoya":["Nicoya","Mansión","San Antonio","Quebrada Honda","Sámara","Nosara","Belén de Nosarita"],"Santa Cruz":["Santa Cruz","Bolsón","Veintisiete de Abril","Tempate","Cartagena","Cuajiniquil","Diriá","Cabo Velas","Tamarindo"],"Bagaces":["Bagaces","La Fortuna","Mogote","Río Naranjo"],"Carrillo":["Filadelfia","Palmira","Sardinal","Belén"],"Cañas":["Cañas","Palmira","San Miguel","Bebedero","Porozal"],"Abangares":["Las Juntas","Sierra","San Juan","Colorado"],"Tilarán":["Tilarán","Quebrada Grande","Tronadora","Santa Rosa","Líbano","Tierras Morenas","Arenal","Cabeceras"],"Nandayure":["Carmona","Santa Rita","Zapotal","San Pablo","Porvenir","Bejuco"],"La Cruz":["La Cruz","Santa Cecilia","La Garita","Santa Elena"],"Hojancha":["Hojancha","Monte Romo","Puerto Carrillo","Huacas","Matambú"]};
+const TC={"Baja tensión":[200,300,400,600,800,1000,2000],"Media tensión":[10,20,50,100,200]};
+const EXP={"Trifásico|Estrella-estrella|120/208":{fn:[120,120,120],ff:208},"Trifásico|Estrella-estrella|277/480":{fn:[277,277,277],ff:480},"Trifásico|Estrella-delta|120/240":{fn:[120,120,216],ff:240},"Trifásico|Estrella-delta|240/480":{fn:[240,240,416],ff:480},"Monofásico||120/240":{fn:[120,120],ff:240},"Monofásico||240/480":{fn:[240,240],ff:480}};
+const FOTOS=[{id:"bobinas",t:"Bobinas"},{id:"fichaTC",t:"Ficha técnica del TC"},{id:"lectRet",t:"Lectura del medidor retirado",cambio:true},{id:"sentido",t:"Medidores: sentido de corriente"},{id:"conex",t:"Conexión del transformador"},{id:"fichaCambio",t:"Ficha del cambio",cambio:true},{id:"volt",t:"Voltajes del medidor"}];
+const MAXF=10;
+const LABELS={tipo:"Tipo de orden",orden:"N.º de orden",contrato:"N.º de contrato",tecnico:"Técnico",cliente:"Cliente",canton:"Cantón",distrito:"Distrito",direccion:"Señas",medicion:"Medición",sistema:"Sistema",conexion:"Conexión",voltaje:"Voltaje de servicio",trafos:"Transformadores",kva:"Capacidad (kVA)",macro:"Medición macro",medAsoc:"Medidores asociados",cliTipo:"Tipo de cliente",acometida:"Acometida",rNum:"Retirado: número",rMarca:"Retirado: marca",rKwh:"Retirado: lectura kWh",rKw:"Retirado: lectura M.D.",rSello:"Retirado: sello",iNum:"Instalado: número",iMarca:"Instalado: marca",iClase:"Instalado: clase / tipo",iKwh:"Instalado: lectura kWh",iKw:"Instalado: lectura M.D.",iSello:"Instalado: sello tapa/aro",iSelloMD:"Instalado: sello M.D.",tc:"Bobina (TC)",tp:"TP",constante:"Constante",constAnt:"Constante anterior",v1:"Voltaje F1-N",v2:"Voltaje F2-N",v3:"Voltaje F3-N",f12:"Voltaje F1-F2",f23:"Voltaje F2-F3",f31:"Voltaje F3-F1",a1:"Amperaje F1",a2:"Amperaje F2",a3:"Amperaje F3",fp:"Factor de potencia",obs:"Observaciones",decl:"Confirmación"};
+FOTOS.forEach(f=>LABELS["ph-"+f.id]="Foto: "+f.t);
 
-// tabla de contratos
-$("cTable").innerHTML=Object.entries(CONTRATOS).map(([k,c])=>`<tr style="cursor:default"><td class="mono">${k}</td><td>${c.cliente}</td><td>${c.sistema}</td><td class="mono">${c.voltaje}</td><td class="mono">${c.trafos}</td><td class="mono">${c.kva}</td><td class="mono">${c.tc}</td><td class="mono">${c.constante}</td><td>${c.macro}</td></tr>`).join("");
+function chips(box,name,opts){$(box).innerHTML=opts.map(o=>{const [v,t]=Array.isArray(o)?o:[o,o];return `<label class="chip"><input type="radio" name="${name}" value="${esc(v)}"><span>${esc(t)}</span></label>`}).join("")}
+chips("c-tipo","tipo",["Cambio","Retiro","Instalación nueva","Reinstalación"]);
+chips("c-medicion","medicion",["Baja tensión","Media tensión"]);
+chips("c-sistema","sistema",["Monofásico","Trifásico"]);
+chips("c-conexion","conexion",[["Estrella-estrella","Estrella-estrella (Y-Y)"],["Estrella-delta","Estrella-delta (Y-Δ)"]]);
+chips("c-macro","macro",["No","Sí"]);
+chips("c-cliTipo","cliTipo",["Residencial","Comercial","Industrial"]);
+chips("c-acometida","acometida",["Aérea","Subterránea"]);
+$("canton").innerHTML='<option value="">Seleccione…</option>'+Object.keys(GEO).map(c=>`<option>${c}</option>`).join("");
 
-function visibility(){
-  const t=v("tipo"), cambio=t==="Cambio"||t==="Retiro";
-  $("s-ret").hidden=!cambio;
+function val(k){const r=document.querySelectorAll(`input[name="${k}"]`);if(r.length)return([...r].find(x=>x.checked)||{}).value||"";const e=$(k);if(!e)return"";return e.type==="checkbox"?e.checked:e.value.trim()}
+function setVal(k,v){const r=document.querySelectorAll(`input[name="${k}"]`);if(r.length){r.forEach(x=>x.checked=x.value===String(v));return}const e=$(k);if(!e)return;if(e.type==="checkbox")e.checked=!!v;else e.value=v??""}
+
+let fotos={}, touched=false, registro=[], folioN=0, keyV="", keyT="", keyD="", autoConst=null;
+const tot=()=>Object.values(fotos).reduce((a,l)=>a+l.length,0);
+const shown=el=>el&&!el.closest("[hidden]")&&el.offsetParent!==null;
+
+function voltOpts(){
+  const m=val("medicion"),s=val("sistema"),c=val("conexion");
+  if(m==="Media tensión")return{l:["14 400/24 900 V"]};
+  if(!m)return{l:[],h:"Elija primero la medición."};
+  if(!s)return{l:[],h:"Elija primero el sistema."};
+  if(s==="Monofásico")return{l:["120/240","240/480"]};
+  if(!c)return{l:[],h:"Elija primero la conexión."};
+  return{l:Object.keys(EXP).filter(k=>k.startsWith(`Trifásico|${c}|`)).map(k=>k.split("|")[2])};
+}
+function sync(){
+  const t=val("tipo"),m=val("medicion"),s=val("sistema"),tri=s!=="Monofásico",cambio=t==="Cambio"||t==="Retiro";
+  // distritos
+  if(val("canton")!==keyD){keyD=val("canton");const cur=$("distrito").value,l=GEO[keyD]||[];$("distrito").innerHTML=`<option value="">${l.length?"Seleccione…":"Elija el cantón"}</option>`+l.map(d=>`<option>${d}</option>`).join("");$("distrito").value=l.includes(cur)?cur:""}
+  // voltaje
+  const vo=voltOpts(),kv=vo.l.join(",");
+  if(kv!==keyV){keyV=kv;const cur=val("voltaje");chips("c-voltaje","voltaje",vo.l);if(vo.l.includes(cur))setVal("voltaje",cur);else if(vo.l.length===1)setVal("voltaje",vo.l[0])}
+  $("h-voltaje").textContent=vo.h||"";
+  // bobinas
+  const tl=TC[m]||[],kt=tl.join(",");
+  if(kt!==keyT){keyT=kt;const cur=val("tc");chips("c-tc","tc",tl.map(n=>[String(n),`${n}/5`]));if(tl.map(String).includes(cur))setVal("tc",cur)}
+  $("h-tc").textContent=m?"":"Elija primero la medición.";
+  $("w-tp").hidden=m!=="Media tensión";
+  // constante automática
+  const b=+val("tc");
+  if(b&&m){const fx=+(m==="Baja tensión"?b/5*1.02:120*b).toFixed(2);if(autoConst!==fx){if($("constante").value===""||+$("constante").value===autoConst)$("constante").value=fx;autoConst=fx}
+    $("calc").textContent=m==="Baja tensión"?`${b} ÷ 5 × 102 % = ${fx}`:`120 × ${b} = ${fx}`}
+  else{$("calc").textContent="Se calcula al elegir la bobina.";if(autoConst!==null&&+$("constante").value===autoConst)$("constante").value="";autoConst=null}
+  // visibilidad
+  $("w-conexion").hidden=s!=="Trifásico";
+  $("w-medAsoc").hidden=val("macro")!=="Sí";
   $("w-constAnt").hidden=t!=="Cambio";
-  const tri=v("sistema")!=="Monofásico";
-  $("w-v3").hidden=!tri; $("w-a3").hidden=!tri;
-  $("w-medAsoc").hidden=v("macro")!=="Sí";
+  document.querySelectorAll(".ret").forEach(e=>e.hidden=!cambio);
+  document.querySelectorAll(".tri").forEach(e=>e.hidden=!tri);
+  // esperados
+  const ex=m==="Baja tensión"?EXP[`${s}|${s==="Trifásico"?val("conexion"):""}|${val("voltaje")}`]:null;
+  ["v1","v2","v3"].forEach((k,i)=>$("e-"+k).textContent=ex&&ex.fn[i]?`esperado ${ex.fn[i]} (±0,5 %)`:"");
+  ["f12","f23","f31"].forEach(k=>$("e-"+k).textContent=ex?`esperado ${ex.ff} (±0,5 %)`:"");
+  // fotos aplicables
+  FOTOS.forEach(f=>{const hide=!!f.cambio&&t!=="Cambio";$("ph-"+f.id).hidden=hide;if(hide&&(fotos[f.id]||[]).length){fotos[f.id]=[];drawPhotos()}});
+  return ex;
 }
 
 function validate(){
-  visibility();
-  const errs=[]; const add=(k,msg,kind)=>errs.push({k,msg,kind});
-  const t=v("tipo"), cambio=t==="Cambio"||t==="Retiro", tri=v("sistema")!=="Monofásico";
-  let req=["orden","contrato","tipo","tecnico","sistema","voltaje","conexion","trafos","kva","macro","iNum","iMarca","iClase","iKwh","iKw","iSello","iSelloMD","tc","constante","v1","v2","a1","a2"];
-  if(cambio) req.push("rNum","rMarca","rKwh","rKw","rSello");
-  if(t==="Cambio") req.push("constAnt");
-  if(tri) req.push("v3","a3");
-  if(v("macro")==="Sí") req.push("medAsoc");
-  req.forEach(k=>{if(v(k)==="")add(k,"Campo obligatorio.","f")});
-  if(!v("decl")) add("decl","Debe confirmar la declaración para enviar.","f");
-  const fp=v("fp"); if(fp!==""&&(+fp<0||+fp>1)) add("fp","Debe estar entre 0 y 1.","f");
-  if(v("tc")&&!/^\d+\s*\/\s*\d+$/.test(v("tc"))) add("tc","Use el formato 600/5.","f");
-
-  // contrato
-  const num=v("contrato"), c=CONTRATOS[num], info=$("cInfo");
-  if(num===""){info.hidden=true;$("cliente").value="";$("local").value="";}
-  else if(!c){info.hidden=false;info.className="contract missing";info.textContent="Ese número de contrato no existe. Revise la orden de trabajo.";add("contrato","Contrato no encontrado.","f");$("cliente").value="";$("local").value="";}
-  else{
-    info.hidden=false;info.className="contract found";
-    info.innerHTML=`Contrato encontrado: <b>${c.cliente}</b> · ${c.local}`;
-    $("cliente").value=c.cliente;$("local").value=c.local;
-    const cmp=(k,ok)=>{if(v(k)!==""&&!ok)add(k,"No coincide con el contrato. Verifique en sitio antes de enviar.","c")};
-    cmp("sistema",v("sistema")===c.sistema);
-    cmp("voltaje",v("voltaje")===c.voltaje);
-    cmp("conexion",v("conexion")===c.conexion);
-    cmp("trafos",+v("trafos")===c.trafos);
-    cmp("kva",+v("kva")===c.kva);
-    cmp("tc",norm(v("tc"))===norm(c.tc));
-    cmp("constante",+v("constante")===c.constante);
-    cmp("macro",v("macro")===c.macro);
-    if(c.tp) cmp("tp",norm(v("tp"))===norm(c.tp));
-  }
-  return errs;
+  const ex=sync(),E=[],add=(k,m,kind)=>E.push({k,m,kind:kind||"f"});
+  const t=val("tipo"),m=val("medicion");
+  ["tipo","orden","tecnico","cliente","canton","distrito","medicion","sistema","conexion","voltaje","trafos","kva","macro","medAsoc","rNum","rMarca","rKwh","rKw","rSello","iNum","iMarca","iClase","iKwh","iKw","iSello","iSelloMD","tc","constante","constAnt","v1","v2","v3","f12","f23","f31","a1","a2","a3"].forEach(k=>{
+    const w=document.querySelector(`[data-k="${k}"]`);if(shown(w)&&val(k)==="")add(k,"Requerido")});
+  if(val("trafos")!==""&&(+val("trafos")<1||!Number.isInteger(+val("trafos"))))add("trafos","Número entero mayor que 0");
+  if(val("fp")!==""&&(+val("fp")<0||+val("fp")>1))add("fp","Entre 0 y 1");
+  if(autoConst&&val("constante")!==""&&Math.abs(+val("constante")-autoConst)/autoConst>0.005)add("constante",`Debe ser ${autoConst} (±0,5 %)`,"c");
+  if(ex){const chk=(k,e)=>{if(shown($(k))&&val(k)!==""&&Math.abs(+val(k)-e)/e>0.005)add(k,`Fuera de rango, revise`,"c")};
+    ["v1","v2","v3"].forEach((k,i)=>ex.fn[i]&&chk(k,ex.fn[i]));["f12","f23","f31"].forEach(k=>chk(k,ex.ff))}
+  const cambioC=t==="Cambio"&&val("constAnt")!==""&&val("constante")!==""&&+val("constAnt")!==+val("constante");
+  $("obsOpt").textContent=cambioC?"(explique el cambio de constante)":"(opcional)";
+  if(cambioC&&val("obs")==="")add("obs","La constante cambió: explique el motivo");
+  FOTOS.forEach(f=>{if(!$("ph-"+f.id).hidden&&!(fotos[f.id]||[]).length)add("ph-"+f.id,"Falta foto")});
+  if(!val("decl"))add("decl","Marque la confirmación");
+  return E;
 }
 
-function render(errs){
-  document.querySelectorAll(".field").forEach(f=>{f.classList.remove("bad-c","bad-f");const m=f.querySelector(".msg");if(m)m.textContent=""});
-  const showF=touched;
-  errs.forEach(e=>{
-    if(e.kind==="f"&&!showF)return;
-    const f=document.querySelector(`.field[data-k="${e.k}"]`); if(!f||f.hidden||f.closest("[hidden]"))return;
-    f.classList.add(e.kind==="c"?"bad-c":"bad-f"); f.querySelector(".msg").textContent=e.msg;
+function render(E){
+  document.querySelectorAll("[data-k]").forEach(w=>{w.classList.remove("bad","c");const m=w.querySelector(".msg");if(m)m.textContent=""});
+  document.querySelectorAll(".ph").forEach(p=>{p.classList.remove("bad")});
+  E.forEach(e=>{
+    if(e.kind==="f"&&!touched)return;
+    if(e.k.startsWith("ph-")){$(e.k).classList.add("bad");return}
+    const w=document.querySelector(`[data-k="${e.k}"]`);if(!w)return;
+    w.classList.add("bad");if(e.kind==="c")w.classList.add("c");const m=w.querySelector(".msg");if(m)m.textContent=e.m});
+  const nf=E.filter(e=>e.kind==="f").length,nc=E.filter(e=>e.kind==="c").length;
+  $("status").innerHTML=(nf?`<button type="button" class="pill f" data-go="f">Faltan ${nf} dato${nf>1?"s":""}</button>`:"")+(nc?`<button type="button" class="pill c" data-go="c">${nc} no cuadra${nc>1?"n":""}</button>`:"")+(!nf&&!nc?`<span class="pill ok">Listo para enviar</span>`:"");
+  return E;
+}
+const run=()=>render(validate());
+function goFirst(kind){const E=validate().filter(e=>!kind||e.kind===kind);if(!E.length)return;const k=E[0].k,el=k.startsWith("ph-")?$(k):document.querySelector(`[data-k="${k}"]`);if(el){el.scrollIntoView({block:"center"});const i=el.querySelector("input:not([type=file]),select,textarea");if(i)i.focus({preventScroll:true})}}
+$("status").addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b){touched=true;run();goFirst(b.dataset.go)}});
+$("f").addEventListener("input",run);$("f").addEventListener("change",run);$("f").addEventListener("submit",e=>e.preventDefault());
+
+// fotos
+function buildPhotos(){$("photos").innerHTML=FOTOS.map(f=>`<div class="ph" id="ph-${f.id}"><div class="ph-t">${f.t}</div><div class="thumbs" id="th-${f.id}"></div><label class="ph-add" for="in-${f.id}">+ Agregar foto</label><input type="file" id="in-${f.id}" data-f="${f.id}" accept="image/*" capture="environment" multiple hidden></div>`).join("")}
+function drawPhotos(){
+  const n=tot();$("fotoCount").textContent=`${n} de ${MAXF}`;
+  FOTOS.forEach(f=>{const l=fotos[f.id]||[];$("th-"+f.id).innerHTML=l.map((x,i)=>`<div class="thumb"><img src="${x.url}" alt="${esc(f.t)}"><button type="button" data-del="${f.id}" data-i="${i}" aria-label="Quitar foto">×</button></div>`).join("");
+    $("ph-"+f.id).classList.toggle("has",l.length>0);document.querySelector(`label[for="in-${f.id}"]`).classList.toggle("off",n>=MAXF)});
+}
+buildPhotos();
+$("photos").addEventListener("change",e=>{const id=e.target.dataset.f;if(!id)return;const room=MAXF-tot(),arr=[...e.target.files].filter(x=>x.type.startsWith("image/")).slice(0,Math.max(0,room));fotos[id]=(fotos[id]||[]).concat(arr.map(x=>({name:x.name,size:x.size,url:URL.createObjectURL(x)})));e.target.value="";drawPhotos();run()});
+$("photos").addEventListener("click",e=>{const b=e.target.closest("[data-del]");if(!b)return;fotos[b.dataset.del].splice(+b.dataset.i,1);drawPhotos();run()});
+function sample(t){try{const c=document.createElement("canvas");c.width=320;c.height=240;const g=c.getContext("2d");g.fillStyle="#d9e3ea";g.fillRect(0,0,320,240);g.fillStyle="#1d5b86";g.font="600 20px sans-serif";g.textAlign="center";g.fillText("Foto de ejemplo",160,112);g.font="15px sans-serif";g.fillText(t,160,140);return c.toDataURL("image/png")}catch(_){return""}}
+
+// envío
+async function huella(s){try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}catch(_){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h.toString(16)}}
+const GROUPS=[["Orden y cliente",["tipo","orden","contrato","tecnico","cliente","canton","distrito","direccion"]],["Servicio",["medicion","sistema","conexion","voltaje","trafos","kva","macro","medAsoc","cliTipo","acometida"]],["Medidores",["rNum","rMarca","rKwh","rKw","rSello","iNum","iMarca","iClase","iKwh","iKw","iSello","iSelloMD"]],["Transformadores y constante",["tc","tp","constante","constAnt"]],["Mediciones",["v1","v2","v3","f12","f23","f31","a1","a2","a3","fp"]],["Cierre",["obs"]]];
+// La evidencia fotográfica viaja al servidor comprimida como JPEG; no se guarda en GitHub.
+async function prepararFoto(f, x){
+  const img = new Image();
+  await new Promise((resolve,reject)=>{
+    img.onload=resolve; img.onerror=()=>reject(new Error("No se pudo leer la foto")); img.src=x.url;
   });
-  const nc=errs.filter(e=>e.kind==="c").length, nf=errs.filter(e=>e.kind==="f").length;
-  $("status").innerHTML=(nc?`<span class="pill c">${nc} no coincide${nc>1?"n":""} con el contrato</span>`:"")+(nf?`<span class="pill f">${nf} campo${nf>1?"s":""} pendiente${nf>1?"s":""}</span>`:"")+(!nc&&!nf?`<span class="pill ok">Listo para enviar</span>`:"");
-  if(!$("summary").hidden) showSummary(errs);
+  const escala=Math.min(1,1024/Math.max(img.naturalWidth,img.naturalHeight));
+  const canvas=document.createElement("canvas");
+  canvas.width=Math.max(1,Math.round(img.naturalWidth*escala));
+  canvas.height=Math.max(1,Math.round(img.naturalHeight*escala));
+  canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+  const base64=canvas.toDataURL("image/jpeg",0.64).split(",")[1];
+  if(Math.ceil(base64.length*3/4)>750000) throw new Error("Una fotografía es demasiado grande aun comprimida: "+f.t);
+  return {categoria:f.id, nombre:x.name.slice(0,120), base64};
 }
-
-function showSummary(errs){
-  const s=$("summary");
-  if(!errs.length){s.hidden=true;return}
-  s.hidden=false;
-  s.innerHTML=`<h3>No se puede enviar todavía</h3><ul>${errs.map(e=>`<li><a href="#${e.k}" data-go="${e.k}">${LABELS[e.k]}</a>: ${e.msg}</li>`).join("")}</ul>`;
-}
-
-$("f").addEventListener("input",()=>render(validate()));
-$("f").addEventListener("change",()=>render(validate()));
-$("f").addEventListener("submit",e=>e.preventDefault());
-$("summary").addEventListener("click",e=>{const k=e.target.dataset.go;if(k){e.preventDefault();$(k).focus();$(k).scrollIntoView({block:"center"})}});
-
-async function huella(text){
-  try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(text));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
-  catch(_){let h=0;for(const ch of text)h=(h*31+ch.charCodeAt(0))>>>0;return h.toString(16).padStart(8,"0")}
-}
-
-$("btnSend").addEventListener("click", async () => {
-  touched = true;
-  const errs = validate();
-  render(errs);
-
-  if (errs.length) {
-    showSummary(errs);
-    return;
-  }
-
-  const datos = {};
-  document.querySelectorAll("#f input,#f select,#f textarea").forEach(el => {
-    if (el.id && !el.closest("[hidden]")) datos[el.id] = v(el.id);
+$("btnSend").addEventListener("click",async()=>{
+  touched=true;const E=render(validate());
+  if(E.length){goFirst(E.some(e=>e.kind==="f")?"f":"c");return}
+  if(!sesionActiva){alert("Inicie sesión antes de enviar.");return}
+  const datos={};
+  GROUPS.flatMap(g=>g[1]).forEach(k=>{
+    if(k==="tp") {if(val("medicion")==="Media tensión")datos.tp="120:1";return}
+    const w=document.querySelector(`[data-k="${k}"]`);
+    if(w&&shown(w)&&val(k)!=="")datos[k]=k==="tc"?val(k)+"/5":val(k);
   });
-
-  const btn = $("btnSend");
-  btn.disabled = true;
-  btn.textContent = "Guardando...";
-
-  try {
-    const { data, error } = await db.functions.invoke("guardar-reporte", {
-      body: datos
-    });
-
-    if (error) throw error;
-    if (!data?.ok) throw new Error("No se confirmó el guardado");
-    if (data.pdf_generado) {
-      alert("Reporte " + data.folio +
-            " guardado y PDF generado correctamente.");
-    } else {
-      alert("Reporte guardado con ID " + data.id +
-            ", pero hubo un problema al generar el PDF.");
+  // El contrato puede quedar vacío, porque en esta versión es opcional.
+  datos.contrato = val("contrato");
+  datos.decl = val("decl");
+  const evidencias=FOTOS.filter(f=>!$("ph-"+f.id).hidden)
+    .flatMap(f=>(fotos[f.id]||[]).map(x=>({f,x})));
+  const btn=$("btnSend"); btn.disabled=true;btn.textContent="Guardando reporte y PDF...";
+  try{
+    datos.fotos=await Promise.all(evidencias.map(({f,x})=>prepararFoto(f,x)));
+    const {data,error}=await db.functions.invoke("guardar-reporte-v3",{body:datos});
+    if(error)throw error;
+    if(!data?.ok)throw new Error(data?.error||"Supabase no confirmó el guardado");
+    envioExitoso=true;
+    if(!data.pdf_generado){
+      alert("Reporte ID "+data.id+" guardado, pero falló el PDF o las fotos. NO vuelva a enviarlo: revise Edge Functions → Logs.");
+      btn.textContent="Enviado (PDF pendiente)";
+      return;
     }
-
-    resetForm();
-  } catch (error) {
-    console.error(error);
-    alert("No se pudo guardar el reporte. Revise la consola.");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Enviar reporte";
+    const ahora=new Date();
+    const fs=evidencias.map(({f,x})=>({cat:f.t,url:x.url,name:x.name,size:x.size}));
+    const rec={folio:data.folio,fecha:ahora.toLocaleString("es-CR",{dateStyle:"medium",timeStyle:"short"}),d:datos,fs,pdfRuta:data.pdf_ruta||null,pdfEstado:"generado"};
+    $("v-rec").innerHTML="";
+    showRec(rec,true);
+    // No añadimos al registro local: la base de datos es la fuente de verdad.
+    alert("Reporte "+data.folio+" y PDF guardados en Supabase. El envío por correo todavía no está configurado.");
+  }catch(error){
+    console.error("Error al enviar reporte:",error);
+    let msg=error?.message||"Error desconocido";
+    if(error?.context?.json){try{const j=await error.context.json(); msg=j.error||msg}catch(_){}}
+    alert("No se pudo completar el envío: "+msg+". Antes de reintentar, consulte Mis reportes y revise la consola (F12).");
+  }finally{
+    if(envioExitoso){
+      btn.disabled=true;
+      btn.textContent="Reporte enviado";
+    }else{
+      btn.disabled=false;btn.textContent="Enviar reporte";
+    }
   }
 });
-
-
-const GROUPS=[
-  ["Orden",["orden","contrato","tipo","tecnico","cliente","local","direccion"]],
-  ["Características del servicio",["sistema","voltaje","conexion","trafos","kva","cliTipo","acometida","macro","medAsoc"]],
-  ["Medidor retirado",["rNum","rMarca","rKwh","rKw","rSello"]],
-  ["Medidor instalado",["iNum","iMarca","iClase","iTipo","iKwh","iKw","iSello","iSelloMD"]],
-  ["Transformadores de medida",["tc","tp","constAnt","constante"]],
-  ["Mediciones en sitio",["v1","v2","v3","a1","a2","a3","fp"]],
-  ["Observaciones",["obs"]]
-];
-const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
-
-function showReceipt(rec,fresh){
-  const d=rec.data;
-  const secs=GROUPS.map(([t,ks])=>{const items=ks.filter(k=>k in d&&d[k]!=="").map(k=>`<div><dt>${LABELS[k]}</dt><dd>${esc(d[k])}</dd></div>`).join("");return items?`<div class="r-sec"><h3>${t}</h3><dl>${items}</dl></div>`:""}).join("");
-  $("v-rec").innerHTML=`<div class="receipt">
-    <div class="r-head"><span class="lock">● Enviado · bloqueado</span><h2>Comprobante ${rec.folio}</h2>
-    <span class="lede">${fresh?"El técnico ya no puede modificar este reporte. En la versión real, el PDF le llega a Hazel por correo y se guarda en su carpeta.":"Vista de Hazel. Solo lectura."}</span></div>
-    <dl class="meta"><div><dt>Enviado</dt><dd>${rec.fecha}</dd></div><div><dt>Enviado por</dt><dd>${esc(d.tecnico)}</dd></div><div><dt>Validación contra contrato</dt><dd>Sin diferencias</dd></div><div style="grid-column:1/-1"><dt>Huella digital (SHA-256)</dt><dd>${rec.hash}</dd></div></dl>
-    ${secs}
-    <div class="r-foot"><span>La huella se calcula con todos los datos. Si alguien cambia un solo valor en una copia, la huella ya no coincide con la del registro.</span>
-    <button class="btn ghost" type="button" id="btnBack">${fresh?"Nuevo reporte":"Volver al registro"}</button></div></div>`;
+let recFresh=true;
+function showRec(r,fresh){
+  recFresh=fresh;
+  const secciones=GROUPS.map(([titulo,ks])=>{
+    const items=ks.filter(k=>k in r.d&&r.d[k]!=="")
+      .map(k=>`<div><dt>${LABELS[k]}</dt><dd>${esc(r.d[k])}</dd></div>`).join("");
+    return items?`<div class="r-sec"><h3>${titulo}</h3><dl>${items}</dl></div>`:"";
+  }).join("");
+  const fotosLocal=(r.fs||[]).filter(x=>x.url);
+  const totalFotos=Array.isArray(r.d.fotos)?r.d.fotos.length:fotosLocal.length;
+  const fotosHTML=fotosLocal.length?`<div class="r-sec"><h3>Fotos (${fotosLocal.length})</h3><div class="r-photos">${fotosLocal.map(x=>`<figure><img src="${x.url}" alt="${esc(x.cat)}"><figcaption>${esc(x.cat)}</figcaption></figure>`).join("")}</div></div>`:
+    totalFotos?`<div class="r-sec"><h3>Fotos (${totalFotos})</h3><p class="hint">Las evidencias fotográficas están dentro del PDF privado del reporte.</p></div>`:"";
+  const estadoPdf=r.pdfEstado||"generado";
+  const pdfBtn=r.pdfRuta&&estadoPdf==="generado"?'<button class="btn ghost" type="button" id="btnPdfRec">Ver PDF</button>':
+    (estadoPdf!=="generado"?'<span class="hint">PDF pendiente o con error</span>':'');
+  $("v-rec").innerHTML=`<div class="receipt"><div class="r-head"><span class="lock">Reporte guardado</span><h2>${esc(r.folio||"Sin folio")}</h2><span class="hint">${esc(r.fecha)} · ${esc(r.d.tecnico||"")}</span></div>${secciones}${fotosHTML}<div class="r-foot">${pdfBtn}<button class="btn ghost" type="button" id="btnBack">${fresh?"Nuevo reporte":"Volver al registro"}</button></div></div>`;
   show("rec");
-  $("btnBack").onclick=()=>{if(fresh){resetForm();show("form")}else show("reg")};
+  const btnPDF=$("btnPdfRec");if(btnPDF)btnPDF.onclick=()=>abrirPdfPrivado(r.pdfRuta);
+  $("btnBack").onclick=()=>fresh?clearAll():show(vistaLista);
   window.scrollTo({top:0});
 }
-
-function renderReg(){
-  $("regEmpty").hidden=registro.length>0;
-  $("regBody").innerHTML=registro.map((r,i)=>`<tr data-i="${i}" tabindex="0"><td class="mono">${r.folio}</td><td>${r.fecha}</td><td class="mono">${esc(r.data.orden)}</td><td class="mono">${esc(r.data.contrato)}</td><td>${esc(r.data.tecnico)}</td><td>${esc(r.data.tipo)}</td><td class="mono">${r.hash.slice(0,12)}…</td></tr>`).join("");
+async function abrirPdfPrivado(ruta){
+  if(!sesionActiva||!ruta)return;
+  // La URL sólo se puede firmar si la política RLS autoriza el archivo.
+  const {data,error}=await db.storage.from(PDF_BUCKET).createSignedUrl(ruta,60);
+  if(error||!data?.signedUrl){
+    console.error("Acceso PDF:",error);
+    alert("No se pudo abrir el PDF. Verifique sus permisos o el estado del archivo.");
+    return;
+  }
+  window.open(data.signedUrl,"_blank","noopener,noreferrer");
 }
-$("regBody").addEventListener("click",e=>{const tr=e.target.closest("tr");if(tr)showReceipt(registro[+tr.dataset.i],false)});
-$("regBody").addEventListener("keydown",e=>{if(e.key==="Enter"){const tr=e.target.closest("tr");if(tr)showReceipt(registro[+tr.dataset.i],false)}});
-
+async function cargarReportes(modo){
+  if(!sesionActiva||!usuarioActual)return;
+  if(modo==="reg"&&!esHazel)return;
+  vistaLista=modo;
+  $("tituloRegistro").textContent=modo==="reg"?"Registro de Hazel":"Mis reportes";
+  $("infoRegistro").textContent=modo==="reg"?"Últimos 100 reportes de todos los técnicos (acceso autorizado).":"Últimos 100 reportes enviados por su cuenta.";
+  $("regEmpty").hidden=false;$("regEmpty").textContent="Cargando reportes…";
+  $("regBody").innerHTML="";
+  reportesVista=[];
+  const usuarioConsultado=usuarioActual.id;
+  let consulta=db.from("reportes")
+    .select("id,folio,fecha_envio,numero_orden,numero_contrato,tecnico,tipo_orden,usuario_id,datos,pdf_ruta,pdf_estado")
+    .order("fecha_envio",{ascending:false}).limit(100);
+  if(modo==="mios")consulta=consulta.eq("usuario_id",usuarioActual.id);
+  const {data,error}=await consulta;
+  // Si la sesión cambió durante la consulta, no renderizar resultados anteriores.
+  if(!sesionActiva||vistaLista!==modo||!usuarioActual||usuarioActual.id!==usuarioConsultado)return;
+  if(error){
+    console.error("Consulta de reportes:",error);
+    $("regEmpty").textContent="No se pudieron consultar los reportes. Revise las políticas RLS de Supabase.";
+    return;
+  }
+  reportesVista=data||[];
+  $("regEmpty").hidden=reportesVista.length>0;
+  $("regEmpty").textContent="Todavía no hay reportes para mostrar.";
+  $("regBody").innerHTML=reportesVista.map((r,i)=>{
+    const fecha=r.fecha_envio?new Date(r.fecha_envio).toLocaleString("es-CR",{dateStyle:"short",timeStyle:"short"}):"—";
+    const pdf=r.pdf_estado==="generado"&&r.pdf_ruta;
+    return `<tr data-i="${i}" tabindex="0"><td class="mono">${esc(r.folio||"ID "+r.id)}</td><td>${esc(fecha)}</td><td class="mono">${esc(r.numero_orden)}</td><td>${esc(r.datos?.cliente||"")}</td><td>${esc(r.datos?.medicion||"")}</td><td>${esc(r.tecnico)}</td><td>${pdf?`<button class="btn ghost small" type="button" data-pdf="${i}">Ver PDF</button>`:"Pendiente"}</td></tr>`;
+  }).join("");
+}
+$("regBody").addEventListener("click",e=>{
+  const pdf=e.target.closest("[data-pdf]");
+  if(pdf){const r=reportesVista[+pdf.dataset.pdf];if(r?.pdf_ruta)abrirPdfPrivado(r.pdf_ruta);return;}
+  const tr=e.target.closest("tr[data-i]");if(tr)abrirReporteDeLista(+tr.dataset.i);
+});
+$("regBody").addEventListener("keydown",e=>{
+  const tr=e.target.closest("tr[data-i]");
+  if(tr&&e.key==="Enter"&&!e.target.closest("button"))abrirReporteDeLista(+tr.dataset.i);
+});
+function abrirReporteDeLista(i){
+  const r=reportesVista[i];if(!r)return;
+  const d=r.datos||{};
+  showRec({folio:r.folio||"ID "+r.id,
+    fecha:r.fecha_envio?new Date(r.fecha_envio).toLocaleString("es-CR",{dateStyle:"medium",timeStyle:"short"}):"—",
+    d,fs:[],pdfRuta:r.pdf_ruta,pdfEstado:r.pdf_estado},false);
+}
 function show(w){
-  $("v-form").hidden=w!=="form";$("v-rec").hidden=w!=="rec";$("v-reg").hidden=w!=="reg";
-  $("bar").hidden=w!=="form" || $("f").hidden;
-  $("t-form").setAttribute("aria-selected",w==="form"||(w==="rec"&&$("btnBack")?.textContent==="Nuevo reporte"));
-  $("t-reg").setAttribute("aria-selected",w==="reg"||(w==="rec"&&$("btnBack")?.textContent!=="Nuevo reporte"));
-  if(w==="reg")renderReg();
+  if(!sesionActiva)return;
+  if(w==="reg"&&!esHazel)return;
+  ultimaVista=w;
+  $("f").hidden=w!=="form";
+  $("v-rec").hidden=w!=="rec";
+  $("v-reg").hidden=w!=="mios"&&w!=="reg";
+  $("bar").hidden=w!=="form";
+  $("btnNew").hidden=w!=="form";
+  $("t-form").setAttribute("aria-selected",String(w==="form"||(w==="rec"&&recFresh)));
+  $("t-mios").setAttribute("aria-selected",String(w==="mios"||(w==="rec"&&!recFresh&&vistaLista==="mios")));
+  $("t-reg").setAttribute("aria-selected",String(w==="reg"||(w==="rec"&&!recFresh&&vistaLista==="reg")));
+  if(w==="mios"||w==="reg")cargarReportes(w);
 }
 $("t-form").onclick=()=>show("form");
+$("t-mios").onclick=()=>show("mios");
 $("t-reg").onclick=()=>show("reg");
+// ejemplos
+const ORDER=["tipo","medicion","sistema","conexion","voltaje","canton","distrito","tc"];
+function fill(o){
+  document.querySelectorAll("#f input:not([type=file]),#f select,#f textarea").forEach(e=>{if(e.type==="radio"||e.type==="checkbox")e.checked=false;else e.value=""});
+  keyV=keyT=keyD="";autoConst=null;
+  ORDER.forEach(k=>{if(o[k]!==undefined){setVal(k,o[k]);sync()}});
+  Object.keys(o).forEach(k=>{if(!ORDER.includes(k))setVal(k,o[k])});
+  run();
+}
+function clearAll(){
+  Object.values(fotos).flat().forEach(x=>{if(x.url?.startsWith("blob:"))URL.revokeObjectURL(x.url)});
+  fotos={};drawPhotos();touched=false;envioExitoso=false;fill({});show("form");
+  $("btnSend").disabled=false;$("btnSend").textContent="Enviar reporte";
+}
+const BASE={tipo:"Cambio",orden:"58213",tecnico:"Técnico de prueba",cliente:"Quebrador (ejemplo)",canton:"Nicoya",distrito:"Nicoya",direccion:"Camino a Puerto Jesús",medicion:"Baja tensión",sistema:"Trifásico",conexion:"Estrella-delta",voltaje:"120/240",trafos:"3",kva:"300",macro:"No",cliTipo:"Industrial",acometida:"Aérea",rNum:"771045",rMarca:"Elster",rKwh:"98231.4",rKw:"86.2",rSello:"A-31877",iNum:"800192",iMarca:"Itron",iClase:"20 · OpenWay",iKwh:"11548.9",iKw:"1.54",iSello:"A-55102",iSelloMD:"A-55103",tc:"600",constAnt:"163.2",v1:"121.2",v2:"119.8",v3:"120.5",f12:"241",f23:"239.6",f31:"240.8",a1:"142",a2:"138",a3:"151",fp:"0.93",obs:"Se cambió el TC; la constante pasa de 163.2 a 122.4.",decl:true};
+function samplePhotos(){fotos={};FOTOS.forEach(f=>{const u=sample(f.t);if(u)fotos[f.id]=[{name:f.id+".png",size:0,url:u}]});drawPhotos()}
+$("btnNew").onclick=clearAll;
 
-function fill(o){document.querySelectorAll("#f input,#f select,#f textarea").forEach(el=>{if(el.readOnly)return;if(el.type==="checkbox")el.checked=!!o[el.id];else el.value=o[el.id]??""});touched=false;$("summary").hidden=true;render(validate())}
-function resetForm(){fill({})}
-
-const EJEMPLO={orden:"58213",contrato:"348",tipo:"Cambio",tecnico:"Técnico de prueba",direccion:"Frente a la entrada principal del condominio",sistema:"Trifásico",voltaje:"120/208",conexion:"Estrella-estrella",trafos:"3",kva:"500",cliTipo:"Residencial",acometida:"Subterránea",macro:"Sí",medAsoc:"24",rNum:"771045",rMarca:"Elster",rKwh:"98231.4",rKw:"86.2",rSello:"",iNum:"800192",iMarca:"Itron",iClase:"20",iTipo:"OpenWay",iKwh:"0.0",iKw:"0.00",iSello:"A-55102",iSelloMD:"A-55103",tc:"400/5",tp:"",constAnt:"80",constante:"80",v1:"121.3",v2:"120.8",v3:"121.0",a1:"142",a2:"138",a3:"151",fp:"0.93",obs:"Cambio de medidor por falla de display.",decl:false};
-$("btnFill").onclick=()=>{fill({...EJEMPLO,trafos:"4",rSello:"A-31877",decl:true})};
-
-fill(EJEMPLO); touched=true; render(validate());
-actualizarSesion();
+touched=false;drawPhotos();fill({});actualizarSesion();
 </script>
 
 </body></html>
