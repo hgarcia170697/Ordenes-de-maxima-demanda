@@ -472,7 +472,13 @@ async function prepararFoto(f, x){
 }
 $("btnSend").addEventListener("click",async()=>{
   touched=true;const E=render(validate());
-  if(E.length){goFirst(E.some(e=>e.kind==="f")?"f":"c");return}
+  if(E.length){
+    console.table(E);
+    alert("No se puede enviar el reporte:\n\n"+
+      E.map(e=>`${e.k}: ${e.m}`).join("\n"));
+    goFirst(E.some(e=>e.kind==="f")?"f":"c");
+    return;
+  }
   if(!sesionActiva){alert("Inicie sesión antes de enviar.");return}
   const datos={};
   GROUPS.flatMap(g=>g[1]).forEach(k=>{
