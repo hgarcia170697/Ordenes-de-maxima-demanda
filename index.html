@@ -387,8 +387,8 @@ function sync(){
   $("w-tp").hidden=m!=="Media tensión";
   // constante automática
   const b=+val("tc");
-  if(b&&m){const fx=+(m==="Baja tensión"?b/5*1.02:120*b).toFixed(2);if(autoConst!==fx){if($("constante").value===""||+$("constante").value===autoConst)$("constante").value=fx;autoConst=fx}
-    $("calc").textContent=m==="Baja tensión"?`${b} ÷ 5 × 102 % = ${fx}`:`120 × ${b} = ${fx}`}
+  if(b&&m){const fx=+(m==="Baja tensión"?b/5*1.02:b/5*120).toFixed(2);if(autoConst!==fx){if($("constante").value===""||+$("constante").value===autoConst)$("constante").value=fx;autoConst=fx}
+    $("calc").textContent=m==="Baja tensión"?`${b} ÷ 5 × 102 % = ${fx}`:`${b} ÷ 5 × 120 = ${fx}`}
   else{$("calc").textContent="Se calcula al elegir la bobina.";if(autoConst!==null&&+$("constante").value===autoConst)$("constante").value="";autoConst=null}
   // visibilidad
   $("w-conexion").hidden=s!=="Trifásico";
