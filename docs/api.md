@@ -137,7 +137,7 @@ Respuesta 200:
   ],
   "fotos": {
     "Cambio": ["bobinas", "fichaTC", "lectRet", "sentido", "conex", "fichaCambio", "volt"],
-    "Retiro": ["bobinas", "fichaTC", "lectRet", "sentido", "conex", "volt"],
+    "Retiro": ["bobinas", "fichaTC", "sentido", "conex", "volt"],
     "Instalación nueva": ["bobinas", "fichaTC", "sentido", "conex", "volt"],
     "Reinstalación": ["bobinas", "fichaTC", "sentido", "conex", "volt"]
   },

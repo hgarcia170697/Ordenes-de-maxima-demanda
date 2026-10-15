@@ -26,10 +26,12 @@ BEGIN
 END;
 
 -- 2) Fotos por tipo de orden. En 0002, "padre" solo decía 'siempre' o 'cambio', y no alcanza:
---    el contrato da lectRet también a Retiro. Desde ahora "padre" es 'siempre' o una lista
+--    hace falta distinguir cada tipo de orden. Desde ahora "padre" es 'siempre' o una lista
 --    de tipos de orden separados por coma: cambio, retiro, instalacion, reinstalacion.
 --    También se ordena como en docs/api.md.
-UPDATE listas SET padre = 'cambio,retiro', orden = 3 WHERE tipo = 'tipo_foto' AND valor = 'lectRet';
+-- README RF-07: lectRet y fichaCambio solo en cambio. Qué fotos aplican en un retiro está
+-- pendiente con Hazel (README 9.3, issue #1); si cambia, se ajusta "padre" sin tocar código.
+UPDATE listas SET padre = 'cambio', orden = 3 WHERE tipo = 'tipo_foto' AND valor = 'lectRet';
 UPDATE listas SET padre = 'cambio',        orden = 6 WHERE tipo = 'tipo_foto' AND valor = 'fichaCambio';
 UPDATE listas SET orden = 4 WHERE tipo = 'tipo_foto' AND valor = 'sentido';
 UPDATE listas SET orden = 5 WHERE tipo = 'tipo_foto' AND valor = 'conex';
