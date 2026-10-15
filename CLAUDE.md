@@ -16,7 +16,7 @@
 
 ## Cómo trabajar
 - Responder en español, claro; Fabián es practicante, explicar decisiones técnicas sin jerga.
-- **No escribir código hasta que los requerimientos estén aprobados** (v1.1 es borrador). Primero entender, luego proponer, luego construir.
+- Fabián autorizó empezar el Sprint 1 el 15-oct-2026. Lo que dependa de un pendiente de README 9.3 no se programa hasta que se resuelva. Primero entender, luego proponer, luego construir.
 - Cada cambio debe rastrearse a un RF/RN/CA. Si código y README se contradicen, señalarlo y preguntar; no elegir en silencio. Ver pendientes en README 9.3.
 - Toda regla de validación va en la tableta **y** en el servidor (Worker), usando `shared/reglas.js`.
 - No cambiar configuración real de Cloudflare ni de Gmail sin confirmación explícita.

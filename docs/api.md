@@ -144,6 +144,7 @@ Respuesta 200:
   "max_fotos": 10
 }
 ```
+Las tolerancias se entregan en **porcentaje** (0.5 = ±0,5 %). En D1 se guardan como fracción (`0.005`, tabla `listas`, tipo `tolerancia`); el Worker hace la conversión. Los tipos de foto usan los mismos ids del formulario (`bobinas`, `fichaTC`, `sentido`, `conex`, `volt`, `lectRet`, `fichaCambio`).
 
 Notas:
 
