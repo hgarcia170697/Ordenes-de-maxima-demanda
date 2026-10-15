@@ -408,7 +408,7 @@ function sync(){
 function validate(){
   const ex=sync(),E=[],add=(k,m,kind)=>E.push({k,m,kind:kind||"f"});
   const t=val("tipo"),m=val("medicion");
-  ["tipo","orden","tecnico","cliente","canton","distrito","medicion","sistema","conexion","voltaje","trafos","kva","macro","medAsoc","rNum","rMarca","rKwh","rKw","rSello","iNum","iMarca","iClase","iKwh","iKw","iSello","iSelloMD","tc","constante","constAnt","v1","v2","v3","f12","f23","f31","a1","a2","a3"].forEach(k=>{
+  ["tipo","orden","tecnico","contrato","cliente","canton","distrito","medicion","sistema","conexion","voltaje","trafos","kva","macro","medAsoc","rNum","rMarca","rKwh","rKw","rSello","iNum","iMarca","iClase","iKwh","iKw","iSello","iSelloMD","tc","constante","constAnt","v1","v2","v3","f12","f23","f31","a1","a2","a3"].forEach(k=>{
     const w=document.querySelector(`[data-k="${k}"]`);if(shown(w)&&val(k)==="")add(k,"Requerido")});
   if(val("trafos")!==""&&(+val("trafos")<1||!Number.isInteger(+val("trafos"))))add("trafos","Número entero mayor que 0");
   if(val("fp")!==""&&(+val("fp")<0||+val("fp")>1))add("fp","Entre 0 y 1");
