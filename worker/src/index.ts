@@ -3,6 +3,7 @@
 // el resto de endpoints del contrato responde 501 hasta implementarse.
 
 import { cabecerasCors, responderError, responderJson } from "./http";
+import { manejarListas } from "./rutas/listas";
 import { login } from "./rutas/login";
 
 export interface Env {
@@ -39,14 +40,13 @@ export default {
       return responderJson(request, { ok: true, version: env.VERSION });
     }
 
-    if (request.method === "POST" && pathname === "/api/login") {
-      return login(request, env);
-    }
+    if (request.method === "POST" && pathname === "/api/login") return login(request, env);
+    if (request.method === "GET" && pathname === "/api/listas") return manejarListas(request, env);
 
     if (RUTAS_CONTRATO.some((r) => r.metodo === request.method && r.patron.test(pathname))) {
-      return responderError(request, 501, "NO_IMPLEMENTADO", "Este endpoint todavía no está implementado.");
+      return responderError(request, 501, "no_implementado", "Este endpoint todavía no está implementado.");
     }
 
-    return responderError(request, 404, "NO_ENCONTRADO", "La ruta solicitada no existe.");
+    return responderError(request, 404, "no_encontrado", "La ruta solicitada no existe.");
   },
 } satisfies ExportedHandler<Env>;
