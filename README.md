@@ -311,6 +311,7 @@ La versión 1.0 fue revisada con la encargada del proceso y los tutores, y aprob
 | Carpetas | 58213_Fotos y 58213_PDF, nombradas con el número de orden | 12-oct-2026 |
 | Formato del PDF | Institucional de Coopeguanacaste, con logo | 12-oct-2026 |
 | Plataforma | Cloudflare plan gratuito: Worker, D1 y R2. Se deja de usar Supabase | 15-oct-2026 |
+| Cuenta del sistema | `ordenmaximademanda@gmail.com` se usa para todo: Cloudflare (base de datos, archivos, Worker) y envío de correos. Nada queda a nombre de cuentas personales | 15-oct-2026 |
 | App | APK Android con Capacitor, autorizada, sin tienda. Formulario empaquetado, abre sin señal | 15-oct-2026 |
 | Código y distribución | Repo privado; APK firmadas en GitHub Releases de un repo público aparte; la app avisa de versiones nuevas | 15-oct-2026 |
 | Usuarios | Solo 2 líderes de cuadrilla, con usuario y contraseña propios (no Microsoft); el nombre se llena solo | 15-oct-2026 |
@@ -348,5 +349,6 @@ No se han decidido. Hay que resolverlos antes de aprobar la versión 1.1.
 | Cuenta de correo | La cuenta `ordenmaximademanda@gmail.com` ya existe. Falta: activar la verificación en dos pasos, crear la contraseña de aplicación y definir un responsable de la cooperativa además del desarrollador | RF-15, RF-25 |
 | Adjunto del correo | Confirmar en la prueba que worker-mailer envía el PDF adjunto (el README de la librería lo muestra, sin verificar en la versión 1.2.1) y que cabe en los 10 ms de procesador del Worker gratuito | RF-15, CA-07 |
 | Datos personales por Gmail | El PDF con datos de clientes pasa por una cuenta de Gmail; validar con el tutor frente a la Ley 8968 | RNF-09 |
-| Almacenamiento | Se usa la misma cuenta de Cloudflare del sistema de gestión vehicular; confirmar que R2 está activado en ella (activarlo puede pedir tarjeta; no cobra dentro de los 10 GB gratis) | RF-24, RNF-07 |
+| Almacenamiento | La cuenta de Cloudflare del sistema se crea con `ordenmaximademanda@gmail.com`; activar R2 en ella (puede pedir tarjeta; no cobra dentro de los 10 GB gratis) | RF-24, RNF-07 |
+| Correo de la encargada | Se configura al final en la base de datos (`configuracion.correo_encargada`), no en el código ni en el repo; en las pruebas se usa un correo de prueba | RF-15, RF-25 |
 | Administrador | Definir quién mantiene usuarios y listas en Cloudflare y publica versiones | 2.2, RF-21, RF-26 |
