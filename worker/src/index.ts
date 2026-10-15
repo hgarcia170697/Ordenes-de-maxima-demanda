@@ -10,7 +10,11 @@ export interface Env {
   SMTP_USER: string;
   SMTP_PASSWORD: string;
   TOKEN_SECRET: string;
+  CLAVE_PRUEBA?: string; // secreto, solo para probar el correo (issue #12)
+  MODO_PRUEBA?: string; // variable: "1" activa temporalmente el endpoint de prueba
 }
+
+import { pruebaCorreo } from "./rutas/pruebas";
 
 // Origen de la app Android (Capacitor).
 const ORIGENES_PERMITIDOS = ["https://localhost"];
@@ -63,6 +67,10 @@ export default {
 
     if (request.method === "GET" && pathname === "/api/salud") {
       return responderJson(request, { ok: true, version: env.VERSION });
+    }
+
+    if (request.method === "POST" && pathname === "/api/pruebas/correo") {
+      return pruebaCorreo(request, env);
     }
 
     if (RUTAS_CONTRATO.some((r) => r.metodo === request.method && r.patron.test(pathname))) {
