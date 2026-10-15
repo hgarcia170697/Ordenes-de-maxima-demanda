@@ -2,6 +2,9 @@
 // Router mínimo, sin frameworks. Por ahora solo /api/salud funciona;
 // el resto de endpoints del contrato responde 501 hasta implementarse.
 
+import { cabecerasCors, responderError, responderJson } from "./http";
+import { login } from "./rutas/login";
+
 export interface Env {
   DB: D1Database;
   ARCHIVOS: R2Bucket;
@@ -10,35 +13,6 @@ export interface Env {
   SMTP_USER: string;
   SMTP_PASSWORD: string;
   TOKEN_SECRET: string;
-}
-
-// Origen de la app Android (Capacitor).
-const ORIGENES_PERMITIDOS = ["https://localhost"];
-
-function cabecerasCors(request: Request): Record<string, string> {
-  const origen = request.headers.get("Origin") ?? "";
-  const cabeceras: Record<string, string> = {
-    "Access-Control-Allow-Methods": "GET, POST, PUT, OPTIONS",
-    "Access-Control-Allow-Headers": "Authorization, Content-Type, Idempotency-Key",
-    "Access-Control-Max-Age": "86400",
-    Vary: "Origin",
-  };
-  if (ORIGENES_PERMITIDOS.includes(origen)) {
-    cabeceras["Access-Control-Allow-Origin"] = origen;
-  }
-  return cabeceras;
-}
-
-function responderJson(request: Request, cuerpo: unknown, estado = 200): Response {
-  return new Response(JSON.stringify(cuerpo), {
-    status: estado,
-    headers: { "Content-Type": "application/json; charset=utf-8", ...cabecerasCors(request) },
-  });
-}
-
-// Formato de error común de la API.
-function responderError(request: Request, estado: number, codigo: string, mensaje: string): Response {
-  return responderJson(request, { error: { codigo, mensaje } }, estado);
 }
 
 // Endpoints del contrato: método + patrón de ruta.
@@ -63,6 +37,10 @@ export default {
 
     if (request.method === "GET" && pathname === "/api/salud") {
       return responderJson(request, { ok: true, version: env.VERSION });
+    }
+
+    if (request.method === "POST" && pathname === "/api/login") {
+      return login(request, env);
     }
 
     if (RUTAS_CONTRATO.some((r) => r.metodo === request.method && r.patron.test(pathname))) {
