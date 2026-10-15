@@ -1,0 +1,38 @@
+# Configuración del Worker "ordenes-maxima-demanda".
+# Documentación: https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "ordenes-maxima-demanda"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+# nodejs_compat lo pide la librería worker-mailer (correo por SMTP), que se usará después.
+compatibility_flags = ["nodejs_compat"]
+
+# Base de datos D1.
+# Para obtener el id, ejecute UNA sola vez (desde la carpeta worker/):
+#   npx wrangler d1 create ordenes-db
+# y copie el "database_id" que imprime en lugar de REEMPLAZAR_CON_ID.
+[[d1_databases]]
+binding = "DB"
+database_name = "ordenes-db"
+database_id = "REEMPLAZAR_CON_ID"
+migrations_dir = "migrations"
+
+# Almacenamiento R2 privado para fotos y PDF
+# (se crea con: npx wrangler r2 bucket create ordenes-archivos).
+[[r2_buckets]]
+binding = "ARCHIVOS"
+bucket_name = "ordenes-archivos"
+
+# Tarea diaria para respaldos a R2 y reintentos de correo (RNF-07, RF-15).
+# Está comentada porque todavía no hay código que la use; se activa más adelante.
+# [triggers]
+# crons = ["0 8 * * *"]   # 08:00 UTC = 02:00 hora de Costa Rica
+
+[vars]
+VERSION = "0.1.0"
+
+# SECRETOS (NO van en este archivo; se cargan con "npx wrangler secret put NOMBRE"):
+#   SMTP_USER       cuenta de Gmail dedicada del sistema
+#   SMTP_PASSWORD   contraseña de aplicación de esa cuenta
+#   TOKEN_SECRET    cadena larga aleatoria para firmar los tokens de sesión

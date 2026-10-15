@@ -1,0 +1,18 @@
+{
+  "name": "ordenes-maxima-demanda-worker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Worker de Cloudflare (API, D1 y R2) del sistema de mediciones indirectas",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "migrar:local": "wrangler d1 migrations apply ordenes-db --local",
+    "migrar:remoto": "wrangler d1 migrations apply ordenes-db --remote",
+    "tipos": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20260702.1",
+    "typescript": "6.0.3",
+    "wrangler": "4.140.0"
+  }
+}
