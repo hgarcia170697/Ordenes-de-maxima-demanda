@@ -5,7 +5,7 @@ name = "ordenes-maxima-demanda"
 main = "src/index.ts"
 compatibility_date = "2026-09-01"
 
-# nodejs_compat lo pide la librería worker-mailer (correo por SMTP), que se usará después.
+# nodejs_compat lo pide la librería worker-mailer (correo por SMTP).
 compatibility_flags = ["nodejs_compat"]
 
 # Base de datos D1.
@@ -31,8 +31,11 @@ bucket_name = "ordenes-archivos"
 
 [vars]
 VERSION = "0.1.0"
+# "1" activa el endpoint de prueba del correo; déjelo en "0" salvo mientras prueba.
+MODO_PRUEBA = "0"
 
 # SECRETOS (NO van en este archivo; se cargan con "npx wrangler secret put NOMBRE"):
 #   SMTP_USER       cuenta de Gmail dedicada del sistema
 #   SMTP_PASSWORD   contraseña de aplicación de esa cuenta
 #   TOKEN_SECRET    cadena larga aleatoria para firmar los tokens de sesión
+#   CLAVE_PRUEBA    clave del endpoint de prueba del correo (texto largo inventado)

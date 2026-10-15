@@ -10,6 +10,9 @@
     "migrar:remoto": "wrangler d1 migrations apply ordenes-db --remote",
     "tipos": "tsc --noEmit"
   },
+  "dependencies": {
+    "worker-mailer": "1.2.1"
+  },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20260923.1",
     "typescript": "6.0.3",

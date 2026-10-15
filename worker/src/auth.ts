@@ -90,7 +90,7 @@ export async function verificarContrasena(
 
 // ---------- Token JWT HS256 ----------
 
-async function claveHmac(env: Env, usos: KeyUsage[]): Promise<CryptoKey> {
+async function claveHmac(env: Env, usos: ("sign" | "verify")[]): Promise<CryptoKey> {
   if (!env.TOKEN_SECRET) {
     throw new ErrorConfiguracion("TOKEN_SECRET no está configurado en el Worker.");
   }

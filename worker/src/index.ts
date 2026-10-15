@@ -1,10 +1,11 @@
 // Worker del sistema de mediciones indirectas.
-// Router mínimo, sin frameworks. Por ahora solo /api/salud funciona;
-// el resto de endpoints del contrato responde 501 hasta implementarse.
+// Router mínimo, sin frameworks. Los endpoints que faltan
+// responden 501 hasta implementarse (ver docs/api.md).
 
 import { cabecerasCors, responderError, responderJson } from "./http";
 import { manejarListas } from "./rutas/listas";
 import { login } from "./rutas/login";
+import { pruebaCorreo } from "./rutas/pruebas";
 
 export interface Env {
   DB: D1Database;
@@ -14,6 +15,8 @@ export interface Env {
   SMTP_USER: string;
   SMTP_PASSWORD: string;
   TOKEN_SECRET: string;
+  CLAVE_PRUEBA?: string; // secreto, solo para probar el correo (issue #12)
+  MODO_PRUEBA?: string; // variable: "1" activa temporalmente el endpoint de prueba
 }
 
 // Endpoints del contrato: método + patrón de ruta.
@@ -42,6 +45,7 @@ export default {
 
     if (request.method === "POST" && pathname === "/api/login") return login(request, env);
     if (request.method === "GET" && pathname === "/api/listas") return manejarListas(request, env);
+    if (request.method === "POST" && pathname === "/api/pruebas/correo") return pruebaCorreo(request, env);
 
     if (RUTAS_CONTRATO.some((r) => r.metodo === request.method && r.patron.test(pathname))) {
       return responderError(request, 501, "no_implementado", "Este endpoint todavía no está implementado.");
