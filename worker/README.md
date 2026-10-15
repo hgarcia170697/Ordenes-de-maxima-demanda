@@ -2,7 +2,7 @@
 
 Programa de Cloudflare que atiende la API del sistema de mediciones indirectas. Guarda los datos en D1 y los archivos en R2. El esquema sigue el README principal, sección 7.1.
 
-Estado actual: solo funciona `GET /api/salud`; los demás endpoints responden 501 (`NO_IMPLEMENTADO`).
+Estado actual: funcionan `GET /api/salud` y `POST /api/login`; los demás endpoints responden 501 (`NO_IMPLEMENTADO`).
 
 ## Comandos (desde la carpeta `worker/`)
 
@@ -30,6 +30,28 @@ npx wrangler secret put SMTP_USER
 npx wrangler secret put SMTP_PASSWORD
 npx wrangler secret put TOKEN_SECRET
 ```
+
+`TOKEN_SECRET` firma las sesiones (JWT). Genere un valor aleatorio largo y péguelo cuando `wrangler` se lo pida:
+
+```
+node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"
+```
+
+Si no está cargado, el login responde 500 con un mensaje claro. Si lo cambia, todas las sesiones abiertas dejan de valer.
+
+## Crear los usuarios (los 2 líderes)
+
+No hay pantalla de registro: cada usuario se crea una vez, a mano. Desde `worker/`:
+
+1. `node scripts/crear-usuario.mjs` (pide usuario, nombre y contraseña; la contraseña no se ve al escribirla).
+2. El script **imprime** un comando `npx wrangler d1 execute ordenes-db --remote --command "INSERT ..."`. Cópielo y ejecútelo.
+3. Repita para el segundo líder.
+
+El script no guarda nada en archivos. No pegue el comando impreso en el repositorio, en correos ni en chats: contiene el hash de la contraseña. Para desactivar a alguien: `UPDATE usuarios SET activo = 0 WHERE usuario = '...'`.
+
+Parámetros: PBKDF2-SHA256, sal de 16 bytes y 50 000 iteraciones (guardadas por usuario). El plan gratis de Workers da unos 10 ms de CPU por petición: mida el login real y, si se excede, baje las iteraciones en `src/auth.ts` y en el script, y vuelva a crear los usuarios.
+
+Login: 5 intentos fallidos en 15 minutos por usuario bloquean con 429 (`Retry-After`). Todo intento queda en la bitácora (`login_ok`, `login_fallido`, `login_bloqueado`).
 
 ## Despliegue automático
 
