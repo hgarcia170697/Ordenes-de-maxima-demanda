@@ -1,6 +1,11 @@
 // Worker del sistema de mediciones indirectas.
-// Router mínimo, sin frameworks. Por ahora solo /api/salud funciona;
-// el resto de endpoints del contrato responde 501 hasta implementarse.
+// Router mínimo, sin frameworks. Los endpoints que faltan
+// responden 501 hasta implementarse (ver docs/api.md).
+
+import { cabecerasCors, responderError, responderJson } from "./http";
+import { manejarListas } from "./rutas/listas";
+import { login } from "./rutas/login";
+import { pruebaCorreo } from "./rutas/pruebas";
 
 export interface Env {
   DB: D1Database;
@@ -10,35 +15,8 @@ export interface Env {
   SMTP_USER: string;
   SMTP_PASSWORD: string;
   TOKEN_SECRET: string;
-}
-
-// Origen de la app Android (Capacitor).
-const ORIGENES_PERMITIDOS = ["https://localhost"];
-
-function cabecerasCors(request: Request): Record<string, string> {
-  const origen = request.headers.get("Origin") ?? "";
-  const cabeceras: Record<string, string> = {
-    "Access-Control-Allow-Methods": "GET, POST, PUT, OPTIONS",
-    "Access-Control-Allow-Headers": "Authorization, Content-Type, Idempotency-Key",
-    "Access-Control-Max-Age": "86400",
-    Vary: "Origin",
-  };
-  if (ORIGENES_PERMITIDOS.includes(origen)) {
-    cabeceras["Access-Control-Allow-Origin"] = origen;
-  }
-  return cabeceras;
-}
-
-function responderJson(request: Request, cuerpo: unknown, estado = 200): Response {
-  return new Response(JSON.stringify(cuerpo), {
-    status: estado,
-    headers: { "Content-Type": "application/json; charset=utf-8", ...cabecerasCors(request) },
-  });
-}
-
-// Formato de error común de la API.
-function responderError(request: Request, estado: number, codigo: string, mensaje: string): Response {
-  return responderJson(request, { error: { codigo, mensaje } }, estado);
+  CLAVE_PRUEBA?: string; // secreto, solo para probar el correo (issue #12)
+  MODO_PRUEBA?: string; // variable: "1" activa temporalmente el endpoint de prueba
 }
 
 // Endpoints del contrato: método + patrón de ruta.
@@ -65,10 +43,14 @@ export default {
       return responderJson(request, { ok: true, version: env.VERSION });
     }
 
+    if (request.method === "POST" && pathname === "/api/login") return login(request, env);
+    if (request.method === "GET" && pathname === "/api/listas") return manejarListas(request, env);
+    if (request.method === "POST" && pathname === "/api/pruebas/correo") return pruebaCorreo(request, env);
+
     if (RUTAS_CONTRATO.some((r) => r.metodo === request.method && r.patron.test(pathname))) {
-      return responderError(request, 501, "NO_IMPLEMENTADO", "Este endpoint todavía no está implementado.");
+      return responderError(request, 501, "no_implementado", "Este endpoint todavía no está implementado.");
     }
 
-    return responderError(request, 404, "NO_ENCONTRADO", "La ruta solicitada no existe.");
+    return responderError(request, 404, "no_encontrado", "La ruta solicitada no existe.");
   },
 } satisfies ExportedHandler<Env>;
