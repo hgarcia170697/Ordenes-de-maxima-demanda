@@ -44,12 +44,13 @@ INSERT INTO listas (tipo, valor, padre, orden) VALUES
   ('tolerancia', '0.005', 'constante', 1),
   ('tolerancia', '0.005', 'voltaje',   2);
 
--- Tipos de foto (RF-07). "padre" = 'siempre' o 'cambio' (solo cuando es cambio o retiro).
+-- Tipos de foto (RF-07). "valor" = id usado en el formulario y en el nombre del archivo
+-- (58213_bobinas_1.jpg); "padre" = 'siempre' o 'cambio' (solo en órdenes de cambio).
 INSERT INTO listas (tipo, valor, padre, orden) VALUES
-  ('tipo_foto', 'bobinas',                         'siempre', 1),
-  ('tipo_foto', 'ficha tecnica del TC',            'siempre', 2),
-  ('tipo_foto', 'medidores con sentido de corriente', 'siempre', 3),
-  ('tipo_foto', 'conexion del transformador',      'siempre', 4),
-  ('tipo_foto', 'voltajes del medidor',            'siempre', 5),
-  ('tipo_foto', 'lectura del medidor retirado',    'cambio',  6),
-  ('tipo_foto', 'ficha del cambio',                'cambio',  7);
+  ('tipo_foto', 'bobinas',     'siempre', 1),
+  ('tipo_foto', 'fichaTC',     'siempre', 2),
+  ('tipo_foto', 'sentido',     'siempre', 3),
+  ('tipo_foto', 'conex',       'siempre', 4),
+  ('tipo_foto', 'volt',        'siempre', 5),
+  ('tipo_foto', 'lectRet',     'cambio',  6),
+  ('tipo_foto', 'fichaCambio', 'cambio',  7);
