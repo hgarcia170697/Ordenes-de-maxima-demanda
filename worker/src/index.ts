@@ -2,6 +2,8 @@
 // Router mínimo, sin frameworks. Por ahora solo /api/salud funciona;
 // el resto de endpoints del contrato responde 501 hasta implementarse.
 
+import { manejarListas } from "./rutas/listas";
+
 export interface Env {
   DB: D1Database;
   ARCHIVOS: R2Bucket;
@@ -29,7 +31,7 @@ function cabecerasCors(request: Request): Record<string, string> {
   return cabeceras;
 }
 
-function responderJson(request: Request, cuerpo: unknown, estado = 200): Response {
+export function responderJson(request: Request, cuerpo: unknown, estado = 200): Response {
   return new Response(JSON.stringify(cuerpo), {
     status: estado,
     headers: { "Content-Type": "application/json; charset=utf-8", ...cabecerasCors(request) },
@@ -37,7 +39,7 @@ function responderJson(request: Request, cuerpo: unknown, estado = 200): Respons
 }
 
 // Formato de error común de la API.
-function responderError(request: Request, estado: number, codigo: string, mensaje: string): Response {
+export function responderError(request: Request, estado: number, codigo: string, mensaje: string): Response {
   return responderJson(request, { error: { codigo, mensaje } }, estado);
 }
 
@@ -64,6 +66,8 @@ export default {
     if (request.method === "GET" && pathname === "/api/salud") {
       return responderJson(request, { ok: true, version: env.VERSION });
     }
+
+    if (request.method === "GET" && pathname === "/api/listas") return manejarListas(request, env);
 
     if (RUTAS_CONTRATO.some((r) => r.metodo === request.method && r.patron.test(pathname))) {
       return responderError(request, 501, "NO_IMPLEMENTADO", "Este endpoint todavía no está implementado.");
