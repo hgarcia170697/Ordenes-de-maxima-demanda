@@ -70,6 +70,13 @@ Sirve para comprobar que Gmail envía un PDF de ~3 MB y que el CPU del Worker no
 
 **Plan B si pasa de 10 ms:** bajar la calidad de las fotos dentro del PDF (menos bytes que convertir a base64 y enviar), por ejemplo reduciendo el JPEG o la resolución antes de armar el PDF.
 
+## Dónde está publicado
+
+- URL: `https://ordenes-maxima-demanda.ordenes-maxima-demanda-worker.workers.dev` (prueba: `/api/salud`).
+- Cuenta de Cloudflare: `ordenmaximademanda@gmail.com`. Base D1 `ordenes-db` (región ENAM) y bucket R2 `ordenes-archivos`.
+- Secretos ya cargados: `TOKEN_SECRET` (valor aleatorio, nadie lo conoce; si se cambia, se cierran todas las sesiones) y `SMTP_USER`.
+- Falta cargar: `SMTP_PASSWORD` (contraseña de aplicación de Gmail) y crear los 2 líderes.
+
 ## Despliegue automático
 
 Al hacer push a `main` con cambios en `worker/`, GitHub Actions (`.github/workflows/worker.yml`) aplica las migraciones y despliega. Requiere los secretos del repositorio `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID`.

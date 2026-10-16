@@ -8,7 +8,7 @@ Todos los datos de ejemplo son ficticios (orden 58213, "Cliente de prueba"). Nun
 
 ## 1. Convenciones generales
 
-- **Base**: `https://<worker>.workers.dev` (la URL real se define al desplegar). Todas las rutas empiezan con `/api`. Solo HTTPS.
+- **Base**: `https://ordenes-maxima-demanda.ordenes-maxima-demanda-worker.workers.dev`. Todas las rutas empiezan con `/api`. Solo HTTPS.
 - **Formato**: JSON en UTF-8, salvo `POST /api/reportes` (multipart) y `PUT .../pdf` (PDF binario).
 - **Autenticación**: `Authorization: Bearer <token>` en todo, menos `GET /api/salud` y `POST /api/login`. El token es un JWT firmado con HS256 y dura poco (el campo `expira` del login dice cuándo). Si vence, la respuesta es 401 y la tableta debe pedir login de nuevo (sin perder el borrador ni la cola de envíos).
 - **Fechas**: ISO 8601 en UTC, por ejemplo `2026-10-15T16:30:00Z`. La tableta las muestra en hora de Costa Rica (UTC-6).
