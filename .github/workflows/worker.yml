@@ -17,15 +17,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
-      - name: Verificar secretos de Cloudflare
+      # Mientras los secretos no estén cargados (solo la dueña del repo puede hacerlo),
+      # el despliegue se hace a mano desde la PC con "npm run deploy" y este job no falla.
+      - name: Revisar si hay secretos de Cloudflare
+        id: secretos
         working-directory: .
         env:
           TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CUENTA: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           if [ -z "$TOKEN" ] || [ -z "$CUENTA" ]; then
-            echo "::error::Faltan los secretos CLOUDFLARE_API_TOKEN y/o CLOUDFLARE_ACCOUNT_ID. Créelos en Settings > Secrets and variables > Actions."
-            exit 1
+            echo "::notice::Sin secretos de Cloudflare: se omite el despliegue automático. Desplegar a mano con 'npm run deploy' desde worker/."
+            echo "hay=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "hay=si" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Verificar que se configuró el id de D1
@@ -46,6 +51,7 @@ jobs:
         run: npm run tipos
 
       - name: Aplicar migraciones en D1
+        if: steps.secretos.outputs.hay == 'si'
         uses: cloudflare/wrangler-action@v4.1.3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -54,6 +60,7 @@ jobs:
           command: d1 migrations apply ordenes-db --remote
 
       - name: Desplegar Worker
+        if: steps.secretos.outputs.hay == 'si'
         uses: cloudflare/wrangler-action@v4.1.3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
