@@ -3,6 +3,8 @@
 
 name = "ordenes-maxima-demanda"
 main = "src/index.ts"
+# Cuenta de Cloudflare del sistema (ordenmaximademanda@gmail.com). No es secreto.
+account_id = "f24914fe203a654fe2b340e8883acfd0"
 compatibility_date = "2026-09-01"
 
 # nodejs_compat lo pide la librería worker-mailer (correo por SMTP).
@@ -15,7 +17,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "ordenes-db"
-database_id = "REEMPLAZAR_CON_ID"
+database_id = "832184e5-ee35-4ea9-9827-d1165f3fa032"
 migrations_dir = "migrations"
 
 # Almacenamiento R2 privado para fotos y PDF
